@@ -301,10 +301,19 @@
   <button class="tab" onclick="switchTab(1,this)"><i class="ti ti-chart-line"></i> Progress</button>
   <button class="tab" onclick="switchTab(2,this)"><i class="ti ti-layout-list"></i> Program</button>
   <button class="tab" onclick="switchTab(3,this)"><i class="ti ti-robot"></i> Coach AI</button>
+  <button class="tab" onclick="switchTab(4,this)"><i class="ti ti-messages"></i> Messages</button>
 </div>
 
 <!-- TAB 0: SESSIONS -->
 <div id="tab0">
+  <div class="card" id="musicCard">
+    <p class="card-title"><i class="ti ti-music"></i> Training music</p>
+    <div id="musicEmbedWrap"></div>
+    <div class="btn-row" style="margin-top:10px">
+      <input id="musicUrlInput" placeholder="Paste a Spotify playlist/album/track link…" style="flex:1;min-width:160px" />
+      <button class="btn btn-primary" onclick="setMusicUrl()">Set</button>
+    </div>
+  </div>
   <div class="metrics">
     <div class="metric"><div class="metric-label">Week</div><div class="metric-val" id="m-week">1 / 18</div></div>
     <div class="metric"><div class="metric-label">Phase</div><div class="metric-val" id="m-phase" style="font-size:13px;padding-top:3px">Movement</div></div>
@@ -313,6 +322,10 @@
   </div>
   <div class="week-grid" id="weekGrid"></div>
   <div class="phase-banner" id="phaseBanner"></div>
+  <div class="card" id="musicCard">
+    <p class="card-title"><i class="ti ti-music"></i> Training playlist</p>
+    <div id="musicPlayerWrap"></div>
+  </div>
   <div class="card">
     <p class="card-title"><i class="ti ti-calendar-week"></i> <span id="weekTitle">Week 1</span></p>
     <div id="sessionList"></div>
@@ -397,6 +410,18 @@
   <div class="chat-input-wrap">
     <textarea class="chat-input" id="chatInput" placeholder="Ask about a session, drill, or how training is going…" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
     <button class="chat-send" id="chatSend" onclick="sendChat()"><i class="ti ti-send"></i></button>
+  </div>
+</div>
+
+<!-- TAB 4: MESSAGES -->
+<div id="tab4" style="display:none">
+  <div id="msgRoleBar" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+  <div id="msgThreadWrap" style="display:none">
+    <div class="chat-messages" id="msgMessages" style="min-height:300px"></div>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="msgInput" placeholder="Type a message…" rows="1" onkeydown="handleMsgKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="chat-send" id="msgSend" onclick="sendMessage()"><i class="ti ti-send"></i></button>
+    </div>
   </div>
 </div>
 
@@ -596,7 +621,7 @@ const PHASE_NOTES = [
 
 const TYPE_LABELS = {Gym:"Gym",Track:"Track",Mob:"Mobility",Drill:"Drills",End:"Endurance",Rest:"Rest"};
 
-let state = { currentWeek:0, sessions:{}, weekLogs:{}, times:[], customBreakdowns:{}, sessionEdits:{} };
+let state = { currentWeek:0, sessions:{}, weekLogs:{}, times:[], customBreakdowns:{}, sessionEdits:{}, musicUrl:'' };
 try{ const s=localStorage.getItem('sprintTracker18'); if(s) state=JSON.parse(s); }catch(e){}
 function persist(){ try{ localStorage.setItem('sprintTracker18', JSON.stringify(state)); }catch(e){} }
 
@@ -766,7 +791,7 @@ function exportData(){
 }
 
 function resetAll(){
-  state={currentWeek:0,sessions:{},weekLogs:{},times:[],customBreakdowns:{},sessionEdits:{}};
+  state={currentWeek:0,sessions:{},weekLogs:{},times:[],customBreakdowns:{},sessionEdits:{},musicUrl:state.musicUrl||''};
   persist();
   closeModal();
   refresh();
@@ -1069,14 +1094,16 @@ function buildProgram(){
 }
 
 function switchTab(idx,btn){
-  [0,1,2,3].forEach(i=>{const t=document.getElementById('tab'+i);if(t)t.style.display=i===idx?'':'none';});
+  [0,1,2,3,4].forEach(i=>{const t=document.getElementById('tab'+i);if(t)t.style.display=i===idx?'':'none';});
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  stopMessagesPolling();
   if(idx===1) buildProgress();
   if(idx===2) buildProgram();
   if(idx===3) buildChatSuggestions();
+  if(idx===4) initMessagesTab();
 }
 
-function refresh(){ buildGrid(); buildSessions(); loadWeekLog(); }
+function refresh(){ buildGrid(); buildSessions(); loadWeekLog(); renderMusicCard(); }
 
 document.getElementById('editModal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
 
@@ -1352,6 +1379,174 @@ async function sendChat(){
     appendBubble('assistant','Could not reach the server. Make sure the app is deployed on Netlify and GROQ_API_KEY is set in Site Settings &gt; Environment Variables.');
   }
   sendBtn.disabled=false;
+}
+
+// ── COACH ↔ ATHLETE MESSAGES ────────────────────────────────────────────────
+let msgPollInterval=null;
+let msgKnownIds=new Set();
+
+function getMsgRole(){ return localStorage.getItem('sprintMsgRole')||''; }
+
+function setMsgRole(role){
+  localStorage.setItem('sprintMsgRole',role);
+  renderMsgRoleBar();
+  msgKnownIds=new Set();
+  document.getElementById('msgMessages').innerHTML='';
+  loadMessages(true);
+}
+
+function switchMsgRole(){
+  localStorage.removeItem('sprintMsgRole');
+  stopMessagesPolling();
+  renderMsgRoleBar();
+}
+
+function renderMsgRoleBar(){
+  const bar=document.getElementById('msgRoleBar');
+  const wrap=document.getElementById('msgThreadWrap');
+  if(!bar||!wrap) return;
+  const role=getMsgRole();
+  if(!role){
+    bar.innerHTML=`
+      <p style="font-size:12.5px;color:var(--ink-soft);width:100%;margin-bottom:2px">Who's using this device?</p>
+      <button class="btn btn-primary" onclick="setMsgRole('coach')"><i class="ti ti-crown"></i> I'm the Coach</button>
+      <button class="btn btn-primary" onclick="setMsgRole('athlete')"><i class="ti ti-run"></i> I'm Princess</button>`;
+    wrap.style.display='none';
+  } else {
+    const name = role==='coach' ? 'Ryan (Coach)' : 'Princess';
+    bar.innerHTML=`
+      <span style="font-size:11.5px;color:var(--ink-faint)">Chatting as <strong style="color:var(--ink)">${name}</strong></span>
+      <button class="expand-btn" onclick="switchMsgRole()"><i class="ti ti-repeat"></i> Not you? Switch</button>`;
+    wrap.style.display='';
+    const input=document.getElementById('msgInput');
+    if(input) input.placeholder = role==='coach' ? 'Message Princess…' : 'Message Coach…';
+  }
+}
+
+function initMessagesTab(){
+  renderMsgRoleBar();
+  if(!getMsgRole()) return;
+  loadMessages(true);
+  if(msgPollInterval) clearInterval(msgPollInterval);
+  msgPollInterval=setInterval(()=>loadMessages(false), 4000);
+}
+
+function stopMessagesPolling(){
+  if(msgPollInterval){ clearInterval(msgPollInterval); msgPollInterval=null; }
+}
+
+function escapeHtml(s){
+  const d=document.createElement('div');
+  d.textContent=s;
+  return d.innerHTML;
+}
+
+function appendMsgBubble(m, myRole){
+  const container=document.getElementById('msgMessages');
+  if(!container) return;
+  const mine = m.sender===myRole;
+  const bubble=document.createElement('div');
+  bubble.className=`chat-bubble ${mine?'user':'assistant'}`;
+  const time=new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const senderName = m.sender==='coach' ? 'Ryan' : 'Princess';
+  bubble.innerHTML=`<div class="bubble-content">${escapeHtml(m.text).replace(/\n/g,'<br>')}</div><div class="bubble-time">${mine?'You':senderName} · ${time}</div>`;
+  container.appendChild(bubble);
+}
+
+async function loadMessages(scrollToBottom){
+  const role=getMsgRole();
+  if(!role) return;
+  try{
+    const res=await fetch('/.netlify/functions/messages');
+    if(!res.ok) return;
+    const data=await res.json();
+    const msgs=data.messages||[];
+    const container=document.getElementById('msgMessages');
+    let added=false;
+    msgs.forEach(m=>{
+      if(msgKnownIds.has(m.id)) return;
+      msgKnownIds.add(m.id);
+      appendMsgBubble(m, role);
+      added=true;
+    });
+    if((added||scrollToBottom) && container) container.scrollTop=container.scrollHeight;
+  }catch(e){ /* silent — will retry on next poll */ }
+}
+
+function handleMsgKey(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } }
+
+async function sendMessage(){
+  const role=getMsgRole();
+  if(!role) return;
+  const input=document.getElementById('msgInput');
+  const sendBtn=document.getElementById('msgSend');
+  const text=input.value.trim();
+  if(!text||sendBtn.disabled) return;
+  sendBtn.disabled=true;
+  input.value='';input.style.height='auto';
+  try{
+    const res=await fetch('/.netlify/functions/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sender:role,text})});
+    if(res.ok){
+      const data=await res.json();
+      if(data.message && !msgKnownIds.has(data.message.id)){
+        msgKnownIds.add(data.message.id);
+        appendMsgBubble(data.message, role);
+        const container=document.getElementById('msgMessages');
+        if(container) container.scrollTop=container.scrollHeight;
+      }
+    } else {
+      const err=await res.json().catch(()=>({}));
+      alert(`Message failed to send: ${err.error||'Unknown error'}`);
+    }
+  }catch(e){
+    alert('Could not reach the server. Check your connection and try again.');
+  }
+  sendBtn.disabled=false;
+}
+
+// ── TRAINING PLAYLIST (Spotify embed) ───────────────────────────────────────
+function spotifyEmbedUrl(input){
+  if(!input) return null;
+  input=input.trim();
+  let m=input.match(/spotify:(playlist|album|track|artist|show|episode):([a-zA-Z0-9]+)/);
+  if(m) return `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0`;
+  m=input.match(/open\.spotify\.com\/(?:embed\/)?(playlist|album|track|artist|show|episode)\/([a-zA-Z0-9]+)/);
+  if(m) return `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0`;
+  return null;
+}
+
+function renderMusicCard(){
+  const wrap=document.getElementById('musicPlayerWrap');
+  if(!wrap) return;
+  const embed=spotifyEmbedUrl(state.musicUrl);
+  if(embed){
+    wrap.innerHTML=`
+      <iframe style="border-radius:12px" src="${embed}" width="100%" height="152" frameborder="0" allowfullscreen loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+      <button class="expand-btn" onclick="editMusicUrl()" style="margin-top:8px"><i class="ti ti-pencil"></i> Change playlist</button>`;
+  } else {
+    wrap.innerHTML=`
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px">Paste a Spotify playlist, album, or track link to play music alongside your sessions.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="musicUrlInput" placeholder="https://open.spotify.com/playlist/…" style="flex:1;min-width:180px" />
+        <button class="btn btn-primary" onclick="saveMusicUrl()" style="flex-shrink:0"><i class="ti ti-check"></i> Add</button>
+      </div>`;
+  }
+}
+
+function saveMusicUrl(){
+  const input=document.getElementById('musicUrlInput');
+  const val=input.value.trim();
+  if(!val) return;
+  if(!spotifyEmbedUrl(val)){ alert('Please paste a valid Spotify playlist, album, or track link (from the Share button in Spotify).'); return; }
+  state.musicUrl=val;
+  persist();
+  renderMusicCard();
+}
+
+function editMusicUrl(){
+  state.musicUrl='';
+  persist();
+  renderMusicCard();
 }
 
 // Final init
