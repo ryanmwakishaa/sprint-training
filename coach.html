@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#C1432B">
+<title>Coach Dashboard — Sprint Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --ink:#1C1B19; --track:#C1432B; --track-dark:#9A3320;
+    --go:#D4E157; --go-dark:#A8B82E; --chalk:#FAF7F2;
+    --clay:#F0E6D8; --clay-line:#E2D4C0; --sage:#8FA888; --sage-deep:#5C7656;
+    --paper:#FFFFFF; --ink-soft:#6B655C; --ink-faint:#A39C8F; --shadow:rgba(28,27,25,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Archivo',-apple-system,sans-serif;background:var(--chalk);color:var(--ink);min-height:100vh;
+    background-image:repeating-linear-gradient(180deg, transparent, transparent 95px, rgba(28,27,25,.025) 95px, rgba(28,27,25,.025) 96px);}
+  .app{max-width:720px;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .lane-num{font-family:'Archivo Black',sans-serif;font-size:13px;color:var(--chalk);background:var(--track);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);box-shadow:2px 3px 0 var(--track-dark)}
+  .brand-title{font-family:'Archivo Black',sans-serif;font-size:20px;letter-spacing:-.01em}
+  .brand-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:2px}
+  .sync{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);display:flex;align-items:center;gap:5px}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.5rem}
+  .metric{background:var(--paper);border-radius:10px;padding:11px 10px;border:1px solid var(--clay-line);position:relative;overflow:hidden}
+  .metric:first-child::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track)}
+  .metric:nth-child(2)::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--sage)}
+  .metric:nth-child(3)::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--go-dark)}
+  .metric:nth-child(4)::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track-dark)}
+  .metric-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+  .metric-val{font-family:'Archivo Black',sans-serif;font-size:19px}
+  .card{background:var(--paper);border:1px solid var(--clay-line);border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 0 var(--shadow)}
+  .card-title{font-family:'Archivo Black',sans-serif;font-size:14.5px;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+  .card-title i{color:var(--track);font-size:16px}
+  .phase-banner{background:var(--clay);border-radius:10px;padding:10px 13px;font-size:12.5px;margin-bottom:1rem;line-height:1.5}
+  .session-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px dashed var(--clay-line);font-size:13px}
+  .session-row:last-child{border-bottom:none}
+  .day-col{width:38px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11.5px;flex-shrink:0;padding-top:2px;color:var(--ink-soft);text-transform:uppercase}
+  .detail-col{flex:1;color:#4A453E;line-height:1.5}
+  .badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;text-transform:uppercase}
+  .badge-done{background:var(--sage);color:var(--chalk)}
+  .badge-pending{background:var(--clay);color:var(--ink-soft)}
+  .badge-rest{background:#EFE9DC;color:var(--ink-soft)}
+  .badge-skip{background:#F2D9D2;color:var(--track-dark)}
+  .type-pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:5px;margin-right:5px;font-weight:700;text-transform:uppercase}
+  .type-Gym{background:#E5DEF5;color:#5B3FA0}
+  .type-Track{background:#FCE0D9;color:var(--track-dark)}
+  .type-Mob{background:#DCEBDA;color:var(--sage-deep)}
+  .type-Drill{background:#FCEFC7;color:#8A6D14}
+  .type-End{background:#D6E8F0;color:#205C76}
+  .type-Rest{background:var(--clay);color:var(--ink-soft)}
+  .flag{background:#FCE0D9;border:1px solid #F2C4B8;border-radius:10px;padding:10px 13px;font-size:12.5px;margin-bottom:8px;display:flex;gap:8px;align-items:flex-start}
+  .flag i{color:var(--track-dark);margin-top:1px}
+  .empty{font-size:13px;color:var(--ink-faint);padding:8px 0}
+  .week-list{display:flex;flex-direction:column;gap:6px}
+  .week-item{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:6px 0}
+  .week-item .wk-label{font-family:'JetBrains Mono',monospace;font-weight:700;width:52px;flex-shrink:0}
+  .bar-track{flex:1;height:7px;background:var(--clay);border-radius:4px;overflow:hidden}
+  .bar-fill{height:100%;background:var(--sage);border-radius:4px}
+  .feel-note{color:var(--ink-soft);font-size:11.5px;margin-top:1px}
+  .time-row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed var(--clay-line)}
+  .time-row:last-child{border-bottom:none}
+  .config-warning{background:#FCE0D9;border:1px solid #F2C4B8;border-radius:12px;padding:16px;font-size:13px;line-height:1.6}
+  .config-warning code{background:var(--paper);padding:1px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <div class="lane-num">C</div>
+      <div>
+        <p class="brand-title">Coach View</p>
+        <p class="brand-sub">Read-only — live from athlete's tracker</p>
+      </div>
+    </div>
+    <span class="sync" id="syncIndicator">● Connecting…</span>
+  </div>
+
+  <div id="configWarning" style="display:none" class="config-warning">
+    <strong>Not connected yet.</strong> Open <code>coach.html</code> and fill in <code>SUPABASE_URL</code>,
+    <code>SUPABASE_ANON_KEY</code>, and <code>ATHLETE_KEY</code> at the top of the script — same values
+    you used in <code>index.html</code>.
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Week</div><div class="metric-val" id="m-week">—</div></div>
+      <div class="metric"><div class="metric-label">Phase</div><div class="metric-val" id="m-phase" style="font-size:14px">—</div></div>
+      <div class="metric"><div class="metric-label">Sessions Done</div><div class="metric-val" id="m-done">—</div></div>
+      <div class="metric"><div class="metric-label">Avg Feel</div><div class="metric-val" id="m-feel">—</div></div>
+    </div>
+
+    <div id="flags"></div>
+
+    <div class="card">
+      <p class="card-title"><i class="ti ti-calendar-week"></i> Current week</p>
+      <div class="phase-banner" id="phaseBanner"></div>
+      <div id="sessionList"></div>
+    </div>
+
+    <div class="card">
+      <p class="card-title"><i class="ti ti-mood-smile"></i> Feel trend (recent weeks)</p>
+      <div id="feelTrend"></div>
+    </div>
+
+    <div class="card">
+      <p class="card-title"><i class="ti ti-stopwatch"></i> Performance times</p>
+      <div id="timesLog"></div>
+    </div>
+
+    <div class="card">
+      <p class="card-title"><i class="ti ti-chart-bar"></i> Overall progress</p>
+      <div class="week-list" id="weekProgress"></div>
+    </div>
+  </div>
+</div>
+
+<script src="program-data.js"></script>
+<script>
+// Fill these in — same values as index.html
+const SUPABASE_URL = 'https://jmkslokukidwgwcvcsoc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_IMHlk7X_fzA0lsIDVukL4Q_t1Eyt3a2';
+const ATHLETE_KEY = 'scubaa';
+
+const FEEL_LABELS = ['','Tired','Okay','Good','Great','Peak'];
+let sb = null;
+let state = null;
+
+function setSyncStatus(s){
+  const el = document.getElementById('syncIndicator');
+  const map = {
+    connecting: ['●','var(--ink-faint)','Connecting…'],
+    live:       ['●','var(--sage-deep)','Live'],
+    error:      ['●','var(--track)','Connection error']
+  };
+  const [dot,color,label] = map[s]||map.connecting;
+  el.innerHTML = `<span style="color:${color}">${dot}</span> ${label}`;
+}
+
+function sk(w,d){ return `w${w}d${d}`; }
+
+function render(){
+  if(!state) return;
+  const w = state.currentWeek || 0;
+  const wk = WEEKS[w];
+
+  // metrics
+  let totalDone = 0, totalSessions = 0;
+  WEEKS.forEach((wkX,i)=>{
+    wkX.sessions.forEach((_,d)=>{
+      totalSessions++;
+      if(state.sessions && state.sessions[sk(i,d)]==='done') totalDone++;
+    });
+  });
+  document.getElementById('m-week').textContent = `${w+1} / 18`;
+  document.getElementById('m-phase').textContent = wk.phase;
+  document.getElementById('m-done').textContent = `${totalDone}/${totalSessions}`;
+  const feels = Object.values(state.weekLogs||{}).filter(l=>l&&l.feel).map(l=>l.feel);
+  document.getElementById('m-feel').textContent = feels.length ? (feels.reduce((a,b)=>a+b,0)/feels.length).toFixed(1) : '—';
+
+  // flags — surface anything that might need coach attention
+  const flags = [];
+  const thisWeekLog = (state.weekLogs||{})[w];
+  if(thisWeekLog && thisWeekLog.feel && thisWeekLog.feel <= 2){
+    flags.push(`Feel logged as "${FEEL_LABELS[thisWeekLog.feel]}" this week${thisWeekLog.notes ? ' — "'+thisWeekLog.notes+'"' : ''}`);
+  }
+  const skippedThisWeek = wk.sessions.filter((_,d)=>state.sessions && state.sessions[sk(w,d)]==='skip').length;
+  if(skippedThisWeek > 0){
+    flags.push(`${skippedThisWeek} session${skippedThisWeek>1?'s':''} skipped this week`);
+  }
+  document.getElementById('flags').innerHTML = flags.map(f=>
+    `<div class="flag"><i class="ti ti-alert-triangle"></i><span>${f}</span></div>`
+  ).join('');
+
+  // current week sessions
+  document.getElementById('phaseBanner').innerHTML = `<strong>Week ${w+1}:</strong> ${PHASE_NOTES[w]}`;
+  document.getElementById('sessionList').innerHTML = wk.sessions.map((s,d)=>{
+    const key = sk(w,d);
+    const status = (state.sessions && state.sessions[key]) || 'pending';
+    const bc = status==='done'?'badge-done':status==='skip'?'badge-skip':s.type==='Rest'?'badge-rest':'badge-pending';
+    const bl = status==='done'?'Done':status==='skip'?'Skipped':s.type==='Rest'?'Rest':'Upcoming';
+    return `<div class="session-row">
+      <span class="day-col">${s.day}</span>
+      <span class="detail-col"><span class="type-pill type-${s.type}">${TYPE_LABELS[s.type]||s.type}</span>${s.detail}</span>
+      <span class="badge ${bc}">${bl}</span>
+    </div>`;
+  }).join('');
+
+  // feel trend, last 6 logged weeks
+  const feelEntries = Object.entries(state.weekLogs||{})
+    .filter(([,l])=>l && l.feel)
+    .map(([wi,l])=>({week:parseInt(wi)+1, feel:l.feel, notes:l.notes}))
+    .sort((a,b)=>b.week-a.week)
+    .slice(0,6);
+  document.getElementById('feelTrend').innerHTML = feelEntries.length ?
+    feelEntries.map(e=>`<div class="time-row"><span>Week ${e.week} — ${FEEL_LABELS[e.feel]}${e.notes?'<div class="feel-note">"'+e.notes+'"</div>':''}</span></div>`).join('')
+    : '<p class="empty">No feel logs yet.</p>';
+
+  // times
+  const times = (state.times||[]).slice().reverse();
+  document.getElementById('timesLog').innerHTML = times.length ?
+    times.map(t=>`<div class="time-row"><span>${t.ev}</span><span><strong>${t.val}s</strong> · Week ${t.week}</span></div>`).join('')
+    : '<p class="empty">No times logged yet.</p>';
+
+  // overall progress bars
+  document.getElementById('weekProgress').innerHTML = WEEKS.map((wkX,i)=>{
+    const done = wkX.sessions.filter((_,d)=>state.sessions && state.sessions[sk(i,d)]==='done').length;
+    const pct = Math.round((done/wkX.sessions.length)*100);
+    return `<div class="week-item">
+      <span class="wk-label">Wk ${i+1}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);width:34px;text-align:right">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+async function init(){
+  if(SUPABASE_URL === 'YOUR_SUPABASE_URL' || !window.supabase){
+    document.getElementById('configWarning').style.display = 'block';
+    setSyncStatus('error');
+    return;
+  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  setSyncStatus('connecting');
+
+  const { data, error } = await sb
+    .from('tracker_state')
+    .select('state')
+    .eq('athlete_key', ATHLETE_KEY)
+    .single();
+
+  if(error || !data){
+    setSyncStatus('error');
+    document.getElementById('configWarning').style.display = 'block';
+    document.getElementById('configWarning').innerHTML =
+      `<strong>Could not load data.</strong> Check that ATHLETE_KEY matches the row in Supabase, and that the athlete's app has synced at least once.`;
+    return;
+  }
+
+  state = data.state && Object.keys(data.state).length ? data.state : { currentWeek:0, sessions:{}, weekLogs:{}, times:[] };
+  document.getElementById('dashboard').style.display = 'block';
+  render();
+  setSyncStatus('live');
+
+  // live updates — no refresh needed when the athlete logs something
+  sb.channel('tracker_state_changes')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tracker_state', filter: `athlete_key=eq.${ATHLETE_KEY}` },
+      payload => {
+        state = payload.new.state;
+        render();
+        setSyncStatus('live');
+      })
+    .subscribe();
+}
+
+init();
+</script>
+</body>
+</html>
