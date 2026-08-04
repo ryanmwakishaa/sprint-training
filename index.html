@@ -498,11 +498,18 @@ async function initSync(){
   setSyncStatus('syncing');
   const remote = await pullFromSupabase();
   if(remote && remote.state && Object.keys(remote.state).length){
+    // Remote already has data — that's the source of truth, adopt it.
     state = remote.state;
     try{ localStorage.setItem('sprintTracker18', JSON.stringify(state)); }catch(e){}
     refresh();
+    setSyncStatus('synced');
+  } else if(remote){
+    // Remote row exists but is empty — this device has the only copy so far.
+    // Push whatever's in local storage up to Supabase now.
+    await pushToSupabase();
+  } else {
+    setSyncStatus('error');
   }
-  setSyncStatus(remote ? 'synced' : 'error');
 }
 
 function applySessionEdits(){
