@@ -291,7 +291,7 @@
     <div class="lane-num">18</div>
     <div>
       <p class="brand-title">Sprint Tracker</p>
-      <p class="brand-sub">Princess · 13.5s → low 12s</p>
+      <p class="brand-sub">Princess · 13.5s → high 11s</p>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -1216,8 +1216,35 @@ function buildAppContext(){
   const recentFeels=[];
   for(let i=Math.max(0,w-3);i<=w;i++){const l=state.weekLogs[i]||{};if(l.feel)recentFeels.push(`Week ${i+1}: ${feelLabels[l.feel]}${l.notes?' ("'+l.notes.substring(0,60)+'")':''}`);}
   const recentTimes=(state.times||[]).slice(-5).map(t=>`${t.ev}: ${t.val}s (Week ${t.week})`);
-  const thisWeekStatus=wk.sessions.map((s,d)=>`${s.day} (${s.type}): ${state.sessions[sk(w,d)]||'pending'}`).join(', ');
-  return `CURRENT WEEK: ${w+1} of 18 — ${wk.phase} phase\nWEEK FOCUS: ${wk.focus}\nTHIS WEEK SESSIONS: ${thisWeekStatus}\nTOTAL SESSIONS DONE: ${totalDone}\n${log.feel?`FEEL THIS WEEK: ${feelLabels[log.feel]}${log.notes?' — "'+log.notes+'"':''}`:''}\n${recentFeels.length?'RECENT FEELS:\n'+recentFeels.join('\n'):''}\n${recentTimes.length?'RECENT TIMES:\n'+recentTimes.join('\n'):'NO TIMES LOGGED YET'}`;
+  const thisWeekFull=wk.sessions.map((s,d)=>`  ${s.day} [${s.type}, ${state.sessions[sk(w,d)]||'pending'}]: ${s.detail}`).join('\n');
+  const adjacentWeeks=[w-1,w+1].filter(i=>i>=0&&i<18).map(i=>`Week ${i+1} (${WEEKS[i].phase}${WEEKS[i].deload?' — deload':''}): ${WEEKS[i].focus}`).join('\n');
+  const phaseOverview=[
+    "Phase 1 — Movement foundation (Wks 1–4): mobility, band work, wall drills, no running.",
+    "Phase 2 — Strength build (Wks 5–9): heavy compound lifts, sled introduced, first sprints, ends in 1RM testing.",
+    "Phase 3 — Power expression (Wks 10–13): plyometrics, first timed 60m/100m, sled push+pull contrast work, ends in deload/reassessment.",
+    "Phase 4 — Speed + endurance (Wks 14–18): steady-state endurance arc rising then descending, dedicated max-velocity fly work + assisted overspeed added to chase a high-11s stretch goal (up from the original low-12s target), sharpest sprint work, program closes."
+  ].join('\n');
+  const glossaryIndex=GLOSSARY.map(g=>`${g.name} (${g.tag})`).join('; ');
+  return `ATHLETE PROFILE: ${ATHLETE_NOTE}
+
+PROGRAM OVERVIEW (4 phases, 18 weeks):
+${phaseOverview}
+
+NAMED PROTOCOLS AVAILABLE (glossary — pull specifics from these when relevant, don't just say "do your mobility work"):
+${glossaryIndex}
+
+CURRENT WEEK: ${w+1} of 18 — ${wk.phase} phase${wk.deload?' (DELOAD WEEK)':''}
+WEEK FOCUS: ${wk.focus}
+THIS WEEK'S FULL SESSION PLAN:
+${thisWeekFull}
+
+NEARBY WEEKS FOR CONTEXT:
+${adjacentWeeks}
+
+TOTAL SESSIONS COMPLETED SO FAR: ${totalDone}
+${log.feel?`FEEL THIS WEEK: ${feelLabels[log.feel]}${log.notes?' — "'+log.notes+'"':''}`:''}
+${recentFeels.length?'RECENT FEELS:\n'+recentFeels.join('\n'):''}
+${recentTimes.length?'RECENT TIMES:\n'+recentTimes.join('\n'):'NO TIMES LOGGED YET'}`;
 }
 
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
