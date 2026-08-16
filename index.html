@@ -881,13 +881,14 @@ const GLOSSARY = [
   {
     id:'sled',
     name:'Sled Work',
-    tag:'Horizontal Force Tool · Week 6+',
+    tag:'Horizontal Force Tool · Push + Pull · Weeks 6, 10–12, 14, 16',
     color:'red',
-    intro:"The most sprint-specific gym tool available. At roughly 10% bodyweight, it overloads the drive phase without disrupting sprint mechanics — research confirms loads at or below this threshold show no negative effect on technique. This is a strength tool, not a conditioning tool.",
+    intro:"The most sprint-specific gym tool available. At roughly 10% bodyweight, it overloads the drive phase without disrupting sprint mechanics — research confirms loads at or below this threshold show no negative effect on technique. Push and pull variants train opposite ends of the acceleration mechanic: push emphasises the forward drive/extension phase, pull (harness, facing away from the sled) emphasises the reach-back and hip extension pattern. This is a strength tool, not a conditioning tool.",
     rows:[
-      ['Sled Push','Typically 4–8 × 20m @ ~10% BW','Stay low through the push, maintain the same shin angle as a real drive phase. Drive through the whole foot, full recovery between reps.']
+      ['Sled Push','Typically 3–8 × 20m @ 8–15% BW','Stay low through the push, maintain the same shin angle as a real drive phase. Drive through the whole foot, full recovery between reps.'],
+      ['Sled Pull','Typically 3–4 × 20m @ 8–15% BW','Harness around the waist, facing away from the sled, walking or running backward-facing drive. Emphasises hip extension and the reach-back portion of the stride that push work doesn\'t train.']
     ],
-    note:"Expect unusual posterior chain soreness in the 24–48 hours after the first sled sessions — this is normal and worth addressing with foam rolling and extra recovery, not a sign of injury."
+    note:"Expect unusual soreness in the 24–48 hours after sled sessions — posterior chain (glutes, hamstrings) after push work, and additionally through the upper back and grip after pull work. This is normal and worth addressing with foam rolling and extra recovery, not a sign of injury. Sled is deliberately kept off timed-test days (Week 12's 60m/100m) and out of deload weeks (Weeks 9, 13, 17–18) to protect testing and taper quality."
   },
   {
     id:'pap',
@@ -1052,11 +1053,11 @@ const BREAKDOWN_RULES = [
   },
   {
     test: s => /Sled/i.test(s.detail),
-    title: "Sled work",
-    what: "Pushing or dragging a loaded sled over a set distance — a strength tool that overloads the sprint drive phase specifically.",
-    why: "At light loads (around 10% bodyweight), sled work overloads horizontal force production without disrupting sprint technique — making it one of the most direct strength-to-speed transfer tools available.",
-    how: ["Stay low through the push, maintaining the same shin angle as a real drive phase", "Drive through the whole foot, not just the toes", "Full recovery between reps — this is a strength stimulus, not a conditioning one"],
-    watch: ["Excessive posterior chain soreness in the 24–48h after — common and expected, but worth tracking", "Upper body tension or hunching over the sled — the torso angle should stay consistent with sprint posture"],
+    title: "Sled work (push + pull)",
+    what: "Pushing or pulling a loaded sled over a set distance — a strength tool that overloads the sprint drive phase specifically. Push loads the forward drive/extension pattern; pull (harness, facing away from the sled) loads the reach-back and hip extension pattern that push work alone doesn't train.",
+    why: "At light loads (around 8–15% bodyweight), sled work overloads horizontal force production without disrupting sprint technique — making it one of the most direct strength-to-speed transfer tools available. Using both push and pull covers both halves of the acceleration mechanic instead of just the drive phase.",
+    how: ["Push: stay low through the push, maintaining the same shin angle as a real drive phase, driving through the whole foot", "Pull: harness at the waist, facing away from the sled, focus on full hip extension through each stride rather than just leaning into the harness", "Full recovery between reps either way — this is a strength stimulus, not a conditioning one"],
+    watch: ["Excessive posterior chain soreness in the 24–48h after — common and expected on push days, but worth tracking", "Upper body or grip tension on pull days — the torso angle should stay consistent with sprint posture, not hunched forward"],
     note: ATHLETE_NOTE
   },
   {
