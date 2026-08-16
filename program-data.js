@@ -80,34 +80,34 @@ const WEEKS = [
     {day:"Sat",type:"Mob",detail:"Easy walk 20min. Extended mobility. Reflect on Phase 2."},
     {day:"Sun",type:"Rest",detail:"Full rest. Use 1RM results to calibrate Phase 3 percentage targets precisely."}
   ]},
-  {phase:"Power",focus:"Plyometrics dominate. 30–50m sprints begin. Speed band complexes.",deload:false,sessions:[
+  {phase:"Power",focus:"Plyometrics dominate. 30–50m sprints begin. Speed band complexes. Sled push+pull maintained.",deload:false,sessions:[
     {day:"Mon",type:"Gym",detail:"Mobility → PAP: Hip Thrust 4×4 @82% → rest 4min → Bounds 4×8 · Jump Squat 4×5 · Nordic 3×5"},
     {day:"Tue",type:"Track",detail:"Mobility → Mach drills → Speed band drive 20m × 4 → 6×30m + 3×50m crouch (full rec)"},
     {day:"Wed",type:"Gym",detail:"Mobility → Trap Bar DL 4×4 @82% → Incline Bench 4×5 → Weighted Pull-Up 3×5 → Core"},
-    {day:"Thu",type:"Track",detail:"Mobility → Mach drills → Sled 8×20m @10%BW → 4×30m flat (contrast: heavy → free)"},
+    {day:"Thu",type:"Track",detail:"Mobility → Mach drills → Sled push 4×20m @10%BW → Sled pull 4×20m @10%BW (harness, facing away) → 4×30m flat (contrast: heavy → free)"},
     {day:"Fri",type:"Gym",detail:"Mobility → Box Squat 4×4 @82% → PAP: Box Squat 3×3 → rest 4min → Depth Jump 3×4 (intro)"},
     {day:"Sat",type:"Rest",detail:"Pool recovery 20min or easy cycle. Foam roll. First full sprint week — extra recovery needed."},
     {day:"Sun",type:"Rest",detail:"Full rest. Weigh-in. Target: 70–71 kg."}
   ]},
-  {phase:"Power",focus:"Race-specific power. 50–80m sprints. Hill + flat contrast sessions.",deload:false,sessions:[
+  {phase:"Power",focus:"Race-specific power. 50–80m sprints. Hill + flat contrast sessions. Alternating sled push/pull.",deload:false,sessions:[
     {day:"Mon",type:"Gym",detail:"Mobility → Hip Thrust 5×3 @84% → PAP complex + Bounds → Hurdle Hops 4×5 (30cm)"},
     {day:"Tue",type:"Track",detail:"Mobility → Mach drills → 5×30m starts + 3×60m @90% crouch (9min rec). TIME the 60m."},
     {day:"Wed",type:"Gym",detail:"Mobility → Trap Bar DL 4×4 @83% → Incline Bench 4×5 → Pendlay Row 4×5 → Nordic 4×5"},
-    {day:"Thu",type:"Track",detail:"Contrast: 4×sled 20m @10%BW → walk back → 20m free sprint. Then 2×80m @88%."},
+    {day:"Thu",type:"Track",detail:"Contrast: 2×sled push 20m @12%BW + 2×sled pull 20m @12%BW (alternating) → walk back → 20m free sprint × 4. Then 2×80m @88%."},
     {day:"Fri",type:"Gym",detail:"Mobility → Box Squat 4×4 @83% → Depth Jump 4×4 → Med Ball Rotational Throw 3×8/side → Core"},
     {day:"Sat",type:"Rest",detail:"Active recovery. Foam roll full body. Glutes and hamstrings typically very sore."},
     {day:"Sun",type:"Rest",detail:"Full rest."}
   ]},
-  {phase:"Power",focus:"First timed 60m and 100m of the program. Race rhythm practice.",deload:false,sessions:[
+  {phase:"Power",focus:"First timed 60m and 100m of the program. Race rhythm practice. Sled kept off test days.",deload:false,sessions:[
     {day:"Mon",type:"Gym",detail:"Mobility → Explosive activation: Hip Thrust 3×3 @84%, Jump Squat 3×4, Broad Jump 3×4"},
     {day:"Tue",type:"Track",detail:"Mobility → Mach drills → 4×30m starts → TIMED: 60m × 2 (10min rec). First official times."},
     {day:"Wed",type:"Rest",detail:"Rest. Protect legs before first full 100m attempt."},
     {day:"Thu",type:"Track",detail:"Mobility → Full warm-up → TIMED: 100m × 1 @95%+. First race-distance run of the program."},
     {day:"Fri",type:"Gym",detail:"Light: Hip Thrust 3×5 @78%, Trap Bar DL 3×5 @78%, Bench 3×8, Row 3×8."},
-    {day:"Sat",type:"Track",detail:"3×80m @90% (relaxed finish). Race rhythm + full-distance mechanics practice."},
+    {day:"Sat",type:"Track",detail:"Sled push 3×20m @12%BW → 3×80m @90% (relaxed finish). Race rhythm + full-distance mechanics practice."},
     {day:"Sun",type:"Rest",detail:"Full rest. Record timed 60m and 100m results. Phase 3 progress check."}
   ]},
-  {phase:"Power",focus:"DELOAD + Reassessment. Light sprints. No heavy gym. Plan Phase 4.",deload:true,sessions:[
+  {phase:"Power",focus:"DELOAD + Reassessment. Light sprints. No heavy gym. No sled — protect the taper. Plan Phase 4.",deload:true,sessions:[
     {day:"Mon",type:"Gym",detail:"Mobility → Light: Hip Thrust 3×5 @75%, Box Squat 3×5 @72%. Volume cut to 50%."},
     {day:"Tue",type:"Track",detail:"Mach drills only (A-skip, B-skip 3×30m each). Easy pace. No sprinting."},
     {day:"Wed",type:"Mob",detail:"Full 30min extended mobility. Squat depth reassessment — film and compare to Week 9."},
@@ -116,16 +116,16 @@ const WEEKS = [
     {day:"Sat",type:"Rest",detail:"Full rest."},
     {day:"Sun",type:"Rest",detail:"Full rest. Plan Phase 4. Athlete should now be running faster than program start."}
   ]},
-  {phase:"Speed+End",focus:"SS Endurance begins 2×/week: 2×60sec @86–88%. Sprint quality sessions.",deload:false,sessions:[
+  {phase:"Speed+End",focus:"SS Endurance begins 2×/week: 2×60sec @86–88%. Sprint quality sessions. Light sled maintenance.",deload:false,sessions:[
     {day:"Mon",type:"Track",detail:"Mach drills → 6×30m starts → 3×60m @93% maximal velocity (9min rec). Sharp, fresh."},
     {day:"Tue",type:"Gym",detail:"Mobility → Hip Thrust 3×4 @82%, Trap Bar DL 3×4 @80%, Nordic 3×5, Jump Squat 3×4. 45min."},
     {day:"Wed",type:"End",detail:"SS ENDURANCE: Warm-up 10min → 60sec @86–88% steady → 4min walk → 60sec @86–88% → cool-down. ~380–400m/rep. Set pace in first 5sec and HOLD."},
-    {day:"Thu",type:"Track",detail:"Mach drills → Speed band drive 15m × 4 → 4×50m @92% + 2×80m @90%."},
+    {day:"Thu",type:"Track",detail:"Mach drills → Sled push 3×20m @8–10%BW (maintenance) → Speed band drive 15m × 4 → 4×50m @92% + 2×80m @90%."},
     {day:"Fri",type:"Gym",detail:"Mobility → Box Squat 3×4 @82%, Bench 3×6, Row 3×8. Light and sharp."},
     {day:"Sat",type:"End",detail:"SS ENDURANCE SESSION 2: 2×60sec @86–88%. Is pace consistent between reps and sessions?"},
     {day:"Sun",type:"Rest",detail:"Full rest. Weigh-in. Target: 72 kg."}
   ]},
-  {phase:"Speed+End",focus:"SS Endurance 2×70sec @87–89%. Sprint sharpening.",deload:false,sessions:[
+  {phase:"Speed+End",focus:"SS Endurance 2×70sec @87–89%. Sprint sharpening. No sled — alternating maintenance week off.",deload:false,sessions:[
     {day:"Mon",type:"Track",detail:"Mach drills → 8×30m starts (reaction focus) → 4×60m @93% maximal velocity (9min rec)"},
     {day:"Tue",type:"Gym",detail:"Hip Thrust 3×4 @83%, Bulgarian Split Squat 3×5/leg, Nordic 3×5, Depth Jump 3×4."},
     {day:"Wed",type:"End",detail:"SS ENDURANCE: 2×70sec @87–89% steady. 4min walk recovery. ~440–470m/rep. Pace dropping in final 15sec? Start 5% slower next rep."},
@@ -134,16 +134,16 @@ const WEEKS = [
     {day:"Sat",type:"End",detail:"SS ENDURANCE SESSION 2: 2×70sec @87–89%. Should feel slightly easier than Wednesday."},
     {day:"Sun",type:"Rest",detail:"Full rest. Target: 72–73 kg."}
   ]},
-  {phase:"Speed+End",focus:"SS Endurance PEAK: 2×90sec @87–89%. Hardest endurance session.",deload:false,sessions:[
+  {phase:"Speed+End",focus:"SS Endurance PEAK: 2×90sec @87–89%. Hardest endurance session. Light sled maintenance (pull).",deload:false,sessions:[
     {day:"Mon",type:"Track",detail:"Mach drills → 6×30m starts → 3×80m @93%. Last high-volume sprint week."},
     {day:"Tue",type:"Gym",detail:"Hip Thrust 3×3 @85%, Box Squat 3×3 @84%, Nordic 2×5. Brief, explosive, 35min."},
     {day:"Wed",type:"End",detail:"SS ENDURANCE PEAK: 2×90sec @87–89% steady. 5min walk recovery. ~540–580m/rep. Hardest endurance session. Hold mechanics in final 30sec."},
-    {day:"Thu",type:"Track",detail:"3×60m + 1×100m @90%. Full race distance at race pace. Smooth finish — no strain."},
+    {day:"Thu",type:"Track",detail:"Sled pull 3×20m @8–10%BW (maintenance) → 3×60m + 1×100m @90%. Full race distance at race pace. Smooth finish — no strain."},
     {day:"Fri",type:"Rest",detail:"Rest. Two hard sessions this week — protect the body."},
     {day:"Sat",type:"End",detail:"SS ENDURANCE PEAK SESSION 2: 2×90sec @87–89%. 5min walk. Highest endurance point of program."},
     {day:"Sun",type:"Rest",detail:"Full rest. Weigh-in. Target: 73 kg."}
   ]},
-  {phase:"Speed+End",focus:"Endurance descent: 2×70sec @90–92% — FASTER than Wk15. Race-pace sessions.",deload:false,sessions:[
+  {phase:"Speed+End",focus:"Endurance descent: 2×70sec @90–92% — FASTER than Wk15. Race-pace sessions. No sled — protect peak sprint work.",deload:false,sessions:[
     {day:"Mon",type:"Track",detail:"Mach drills → 6×30m starts → 4×60m @95% — sharpest sprint work of the program."},
     {day:"Tue",type:"Gym",detail:"Hip Thrust 3×3 @86%, Jump Squat 3×4, Broad Jump 3×4. Explosive, 30min."},
     {day:"Wed",type:"End",detail:"SS ENDURANCE DESCENT: 2×70sec @90–92% — FASTER than Week 15 70-sec efforts. The 90-sec base makes this possible. 4min walk recovery."},
@@ -152,7 +152,7 @@ const WEEKS = [
     {day:"Sat",type:"End",detail:"SS ENDURANCE SESSION 2: 2×70sec @90–92%. This should feel faster than any 70-sec in Phase 4."},
     {day:"Sun",type:"Rest",detail:"Full rest."}
   ]},
-  {phase:"Speed+End",focus:"Endurance exit: 40sec → 20sec near-maximal. Final race-prep. Program complete.",deload:false,sessions:[
+  {phase:"Speed+End",focus:"Endurance exit: 40sec → 20sec near-maximal. Final race-prep. No sled — full taper. Program complete.",deload:false,sessions:[
     {day:"Mon",type:"Track",detail:"Activation: Mach drills → 4×30m starts → 2×60m @93% → 1×80m @90%. Feel fast."},
     {day:"Tue",type:"Gym",detail:"Hip Thrust 2×3 @87%, Jump Squat 2×4, Nordic 2×4. 25min — pure activation."},
     {day:"Wed",type:"End",detail:"SS ENDURANCE NEAR-EXIT: 2×40sec @92–94% steady. 3min walk recovery. ~250–270m/rep. Sharp, near-maximal."},
@@ -169,19 +169,19 @@ const PHASE_NOTES = [
   "No running. A-skip, B-skip mechanics. Full Mach drill introduction.",
   "Deload — 50–60% volume. Recovery + assessment. Plan Phase 2 loads.",
   "Drive phase posture. Wall-to-field drills. Speed bands introduced.",
-  "First sled work — horizontal force focus. Squat depth target: parallel by this week.",
+  "First sled work (push) — horizontal force focus. Squat depth target: parallel by this week.",
   "First 10–20m accelerations on track. PAP begins. Diagnostic session.",
   "Acceleration mechanics under load. 30m timed for Phase 3 benchmarks.",
   "Deload + 1RM testing. No sprinting. Calibrate Phase 3 percentages.",
-  "First real sprint work — 30–50m. Sprint mechanics sharpened.",
-  "Sprint mechanics sharpened. 60–80m distances. Contrast (sled → free) sessions.",
-  "First timed runs. 60m and 100m for the first time. Race rhythm practice.",
-  "Recovery, review, re-plan. Light sprints. Athlete should now be running faster.",
-  "First endurance sessions — 2×60sec. Sprint quality maintained.",
-  "70sec steady-state efforts. Sprint sharpening. Reaction focus.",
-  "90sec — endurance ceiling. Hardest endurance week. Sprint quality maintained.",
-  "Endurance descends, pace rises. Best 60m times of the program.",
-  "Exit arc — speed converts from endurance base. Final 100m timed."
+  "First real sprint work — 30–50m. Sled push+pull maintained on contrast day. Sprint mechanics sharpened.",
+  "Sprint mechanics sharpened. 60–80m distances. Alternating sled push/pull → free contrast sessions.",
+  "First timed runs. 60m and 100m for the first time. Sled kept off test days — light push work moved to Saturday. Race rhythm practice.",
+  "Recovery, review, re-plan. Light sprints. No sled — protect the taper. Athlete should now be running faster.",
+  "First endurance sessions — 2×60sec. Light sled push maintenance (Thu). Sprint quality maintained.",
+  "70sec steady-state efforts. Sprint sharpening. Reaction focus. Sled off this week (alternating maintenance).",
+  "90sec — endurance ceiling. Hardest endurance week. Light sled pull maintenance (Thu). Sprint quality maintained.",
+  "Endurance descends, pace rises. No sled — protecting peak sprint output. Best 60m times of the program.",
+  "Exit arc — speed converts from endurance base. No sled — full taper. Final 100m timed."
 ];
 
 const TYPE_LABELS = {Gym:"Gym",Track:"Track",Mob:"Mobility",Drill:"Drills",End:"Endurance",Rest:"Rest"};
