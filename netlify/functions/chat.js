@@ -1,132 +1,137 @@
-exports.handler = async function(event, context) {
-  // Only allow POST
+// netlify/functions/chat.js
+// Coach AI backend — talks to Groq's OpenAI-compatible chat completions endpoint.
+// Requires GROQ_API_KEY set in Netlify: Site Settings > Environment Variables.
+//
+// v2: instructions alone don't reliably break a model out of its own ruts —
+// especially over a long chat where its own prior replies start anchoring its
+// style. This version adds MECHANICAL variety (randomized style directive per
+// request, explicit anti-echo of its own recent phrasing) on top of the prompt
+// and sampling tweaks from v1.
+
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const MODEL = 'llama-3.3-70b-versatile'; // swap here if you want a different Groq model
+
+const BASE_SYSTEM_PROMPT = `You are Coach AI, the sprint coach's assistant embedded inside a training tracker app for a female sprinter nicknamed "Princess" — currently on an 18-week off-season sprint development program built by her coach.
+
+You are NOT a generic chatbot. You are a specific, opinionated, experienced sprint coach with a real coaching voice. Follow these rules:
+
+VOICE
+- Talk like a coach who actually knows this program, not a search-engine summarizer. Reference specific weeks, percentages, exercises, and numbers from the context you're given — don't speak in generalities when specifics are available.
+- Have opinions. If something in the program is a genuine trade-off or judgment call, say what you'd lean toward and why, not just "it depends." If the coach or athlete is worried about something that's actually normal (e.g. deload-week soreness), say so plainly instead of hedging everything with disclaimers.
+- It's fine to push back. If a question implies something that isn't quite right about how the program works, correct it directly and explain why, in a collegial coach-to-coach way — not a scolding way.
+- Match reply length to the question. A quick factual question gets a tight 1-3 sentence answer. A "why does the program do X" or "help me think through Y" question earns a fuller answer with real structure — but don't pad short questions with unneeded framing just to seem thorough.
+- Write like you're texting a coach or athlete you know, not drafting documentation. Contractions are fine. Avoid corporate hedge-phrases ("it's important to note that...", "as an AI...").
+- Do NOT default to a three-bullet-point answer as your standard shape. Plenty of good answers are a single flowing paragraph, or two sentences, or a quick answer followed by one follow-up question. Let the question's shape decide the answer's shape — don't force structure onto something that doesn't need it.
+
+GROUNDING
+- Use the CONTEXT block below for anything about the athlete's actual training — current week, phase, sessions, recent feel/notes, times. Don't invent numbers that aren't in the context; if something genuinely isn't in the context, say you don't have that logged rather than guessing.
+- You do have general sprint coaching knowledge (physiology, technique, periodization principles) — use it freely to explain the "why" behind what's programmed, you're just not inventing THIS athlete's specific data.
+- If asked about something outside training (unrelated topics), gently redirect back to coaching — you're scoped to this role.
+
+SAFETY
+- If soreness, pain, or fatigue sounds like it could be an injury (sharp pain, joint pain, pain that doesn't ease with warm-up, anything asymmetric or worsening) rather than normal training soreness, say so clearly and recommend seeing a physio or doctor rather than trying to program around it yourself.`;
+
+// A pool of concrete style directives. One (sometimes two) get picked at random
+// per request and injected into the system prompt. This is the main lever against
+// "samey" replies — it's much more reliable than just telling the model to "vary
+// itself," because the model can't police its own sameness against a chat history
+// it doesn't clearly see the pattern in. We're forcing the variation mechanically
+// instead of hoping for it.
+const STYLE_DIRECTIVES = [
+  "For this reply: lead with your actual answer or opinion in the first sentence — no throat-clearing, no restating the question back.",
+  "For this reply: it's fine to be short. If the honest answer is one or two sentences, stop there instead of padding it out.",
+  "For this reply: if there's a real trade-off buried in the question, name it explicitly and say which side you'd lean.",
+  "For this reply: write it the way you'd actually text someone mid-conversation — looser, more clipped, not essay-shaped.",
+  "For this reply: if the question has an assumption baked in that's slightly off, correct that assumption first, then answer.",
+  "For this reply: use a concrete number, week, or exercise from the context as your opening reference point instead of a general statement.",
+  "For this reply: end with a real follow-up question only if there's a genuine fork in what to do next — don't tack one on by habit.",
+  "For this reply: if this is a factual/logistics question, just answer it directly with no coaching commentary wrapped around it."
+];
+
+function pickStyleDirectives(){
+  const shuffled = [...STYLE_DIRECTIVES].sort(() => Math.random() - 0.5);
+  const count = Math.random() < 0.35 ? 2 : 1; // occasionally stack two for more texture
+  return shuffled.slice(0, count);
+}
+
+exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
-  const GROQ_API_KEY = process.env.GROQ_API_KEY;
-  if (!GROQ_API_KEY) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'GROQ_API_KEY not set in Netlify environment variables.' })
-    };
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'GROQ_API_KEY not configured on the server' }) };
   }
 
-  let body;
+  let payload;
   try {
-    body = JSON.parse(event.body);
-  } catch(e) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body.' }) };
+    payload = JSON.parse(event.body);
+  } catch (e) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
-  const { messages, context: appContext } = body;
-
-  if (!messages || !Array.isArray(messages)) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'messages array required.' }) };
+  const { messages, context } = payload;
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'messages array required' }) };
   }
 
-  // ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
-  // This is what the AI reads before every conversation. It contains the full
-  // athlete profile, program structure, and any live data passed from the app.
-  const systemPrompt = `You are a sprint coaching assistant embedded in a training app used by a coach (Ryan) and his athlete. You have deep knowledge of sprint development, strength and conditioning, and athletic performance.
+  // Keep only the last ~16 turns of conversation so context doesn't balloon,
+  // while always keeping the fresh system message with up-to-date app state.
+  const trimmedHistory = messages.slice(-16);
 
-ATHLETE PROFILE
-- Female, age 20
-- Height: 5'7" (170cm), Starting weight: ~67kg, Target: 72–73kg by Week 18
-- Current 100m PB: ~13.5 seconds
-- Program target: low 12s range
-- Gym background: Strong. Hip Thrust ~160kg, Box Squat ~90kg
-- Sprint background: Beginner — limited sprint-specific training before this program
-- Key mobility restrictions: Ankle dorsiflexion limited (restricts squat depth), hip mobility needs work
-- Build: Long femurs — squat depth limited by leverages, not skeletal structure. Fixable.
+  // Pull the model's own last couple of replies out of the history and tell it
+  // explicitly not to echo their phrasing/structure. This is what actually stops
+  // a long chat from drifting into "every answer starts with 'Honestly,'" —
+  // the model can't see its own pattern forming, so we point it out directly.
+  const recentAssistantReplies = trimmedHistory
+    .filter(m => m.role === 'assistant')
+    .slice(-2)
+    .map(m => m.content);
 
-PROGRAM STRUCTURE — 18 WEEKS
-Phase 1 (Weeks 1–4): Movement Foundation
-  No running. Mobility first. Band complexes. Wall drills. Mach drill introduction.
-  Goal: Fix ankle/hip mobility, build foundational glute/hip activation, establish sprint posture.
+  const antiEchoBlock = recentAssistantReplies.length
+    ? `\n\nDO NOT REPEAT YOURSELF: here are your last ${recentAssistantReplies.length} reply/replies in this conversation. Don't reuse their opening phrases, their sentence structure, or their overall shape — write this one differently:\n${recentAssistantReplies.map((r, i) => `[Your reply ${i + 1} ago]: ${r.slice(0, 220)}${r.length > 220 ? '…' : ''}`).join('\n')}`
+    : '';
 
-Phase 2 (Weeks 5–9): Strength Build
-  Barbell loading increases. Speed bands introduced. First 20m sprints (Week 7).
-  Goal: Build maximal force production. Sled work for horizontal force. 1RM testing Week 9.
+  const styleBlock = `\n\n${pickStyleDirectives().join('\n')}`;
 
-Phase 3 (Weeks 10–13): Power Expression
-  Plyometrics. Sprint distances to 80m. PAP complexes. First timed 60m + 100m (Week 12).
-  Goal: Convert strength to explosive power. Race mechanics under speed.
+  const systemMessage = {
+    role: 'system',
+    content: `${BASE_SYSTEM_PROMPT}${styleBlock}${antiEchoBlock}\n\n--- CURRENT CONTEXT ---\n${context || '(no context provided)'}`
+  };
 
-Phase 4 (Weeks 14–18): Speed + Endurance
-  Sprint sharpening. Steady-state endurance arc (60sec → 90sec → back down, rising intensity).
-  Goal: Race-ready speed with capacity to sustain it across 100m.
-
-KEY PROTOCOLS (referenced in sessions)
-- Daily Mobility: Ankle wall stretch, hip flexor, 90/90, pigeon, deep squat, thoracic rotation, banded march — 12–15min before every session
-- Band Complex A: Glute bridge, clamshell, lateral walk, hip flexion, pull-apart
-- Band Complex B: SL glute bridge, TKE, hip extension kickback, ankle dorsiflexion, slow high knees
-- Wall Drills A/B: Static drive position, wall march, A-skip mechanics — all no-run
-- Mach Drills: A-skip, B-skip, C-skip, power skip, straight-leg bound, high knee run, arm drive
-- Speed Band A: Resisted wall march, drive drill 10m, knee drive hold, standing high knee march
-- Speed Band B: Resisted A-skip, bound, arm drive, calf raise
-- Sled: ~10% bodyweight, 20m reps — horizontal force tool, not conditioning
-- PAP Complex: Heavy lift → 4min rest → explosive movement (broad jump / depth jump)
-- SS Endurance: Week 14: 2×60sec @86–88% → Week 15: 2×70sec @87–89% → Week 16: 2×90sec (peak) → Week 17: 2×70sec @90–92% → Week 18: 40sec→20sec @92–96%
-
-STRENGTH TARGETS BY PHASE
-- Hip Thrust: 3×8 @60% → 5×5 @70–78% → 5×3 @80–84% → 3×3 @82–87%
-- Box Squat: 4×8 high box → 4×5 @68–76% → 4×4 @80–84% → 3×3 @82–84%
-- Trap Bar DL: — → 4×5 @65–75% → 4×4 @78–83% → 3×4 @80–82%
-- Nordic Curl: 3×6 → 3×5–6 → 4×5 → 2×4–5
-
-CURRENT APP STATE (live data from the app)
-${appContext || 'No session data provided yet.'}
-
-YOUR ROLE
-- Answer questions from both coach and athlete — be honest about who you're likely talking to based on context
-- For athlete questions: be encouraging, clear, practical. Avoid jargon unless they ask for it.
-- For coach questions: be technically precise. Discuss load management, periodisation, biomechanics as needed.
-- Always ground advice in this specific athlete's profile and program — never give generic fitness advice
-- If something is outside your knowledge (injury diagnosis, medical advice) say so clearly and recommend they see a professional
-- Keep responses concise and conversational — this is a mobile app, not a textbook
-- If asked about a specific week or session, refer to the program structure above`;
-
-  // ── GROQ API CALL ──────────────────────────────────────────────────────────
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const res = await fetch(GROQ_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`
+        Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',  // current Groq 70B model (replaces decommissioned llama3-70b-8192)
-        max_tokens: 1024,
-        temperature: 0.65,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages  // full conversation history from the app
-        ]
+        model: MODEL,
+        messages: [systemMessage, ...trimmedHistory],
+        temperature: 1.0,       // pushed up further from v1's 0.9
+        top_p: 0.95,
+        max_tokens: 900,
+        presence_penalty: 0.5,  // slightly stronger than v1
+        frequency_penalty: 0.3
       })
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: `Groq API error: ${err}` })
-      };
+    if (!res.ok) {
+      const errText = await res.text();
+      return { statusCode: res.status, body: JSON.stringify({ error: `Groq API error: ${errText}` }) };
     }
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || 'No response from model.';
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || 'No response received.';
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reply })
     };
-
-  } catch(e) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: `Function error: ${e.message}` })
-    };
+  } catch (e) {
+    return { statusCode: 500, body: JSON.stringify({ error: `Server error: ${e.message}` }) };
   }
 };
