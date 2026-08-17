@@ -9,7 +9,7 @@
 // and sampling tweaks from v1.
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const MODEL = 'llama-3.3-70b-versatile'; // swap here if you want a different Groq model
+const MODEL = 'openai/gpt-oss-120b'; // llama-3.3-70b-versatile was deprecated/removed by Groq — this is their current flagship general-purpose model
 
 const BASE_SYSTEM_PROMPT = `You are Coach AI, the sprint coach's assistant embedded inside a training tracker app for a female sprinter nicknamed "Princess" — currently on an 18-week off-season sprint development program built by her coach.
 
