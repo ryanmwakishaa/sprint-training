@@ -80,9 +80,9 @@ const WEEKS = [
     {day:"Sat",type:"Mob",detail:"Easy walk 20min. Extended mobility. Reflect on Phase 2."},
     {day:"Sun",type:"Rest",detail:"Full rest. Use 1RM results to calibrate Phase 3 percentage targets precisely."}
   ]},
-  {phase:"Power",focus:"Plyometrics dominate. 30–50m sprints begin. Speed band complexes. Sled push+pull maintained.",deload:false,sessions:[
+  {phase:"Power",focus:"Plyometrics dominate, First timed 100m. 30–50m sprints begin. Speed band complexes. Sled push+pull maintained.",deload:false,sessions:[
     {day:"Mon",type:"Gym",detail:"Mobility → PAP: Hip Thrust 4×4 @82% → rest 4min → Bounds 4×8 · Jump Squat 4×5 · Nordic 3×5"},
-    {day:"Tue",type:"Track",detail:"Mobility → Mach drills → Speed band drive 20m × 4 → 6×30m + 3×50m crouch (full rec)"},
+    {day:"Tue",type:"Track",detail:"Mobility → Mach drills → Speed band drive 20m × 4 → 100m test (full rec) 6×30m + 3×50m crouch (full rec)"},
     {day:"Wed",type:"Gym",detail:"Mobility → Trap Bar DL 4×4 @82% → Incline Bench 4×5 → Weighted Pull-Up 3×5 → Core"},
     {day:"Thu",type:"Track",detail:"Mobility → Mach drills → Sled push 4×20m @10%BW → Sled pull 4×20m @10%BW (harness, facing away) → 4×30m flat (contrast: heavy → free)"},
     {day:"Fri",type:"Gym",detail:"Mobility → Box Squat 4×4 @82% → PAP: Box Squat 3×3 → rest 4min → Depth Jump 3×4 (intro)"},
