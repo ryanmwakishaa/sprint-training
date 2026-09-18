@@ -1,3 +1,5 @@
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +44,7 @@
       repeating-linear-gradient(180deg, transparent, transparent 95px, rgba(28,27,25,.025) 95px, rgba(28,27,25,.025) 96px);
   }
   .app{max-width:680px;margin:0 auto;padding:1.5rem 1.25rem 3rem;padding-bottom:calc(3rem + env(safe-area-inset-bottom));padding-left:calc(1.25rem + env(safe-area-inset-left));padding-right:calc(1.25rem + env(safe-area-inset-right))}
-
+ 
   /* ===== HEADER ===== */
   .app-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:12px}
   .brand-mark{display:flex;align-items:center;gap:10px}
@@ -63,13 +65,13 @@
   .opts-btn{padding:7px 13px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);display:flex;align-items:center;gap:5px;transition:transform .12s, box-shadow .12s;box-shadow:2px 2px 0 var(--ink)}
   .opts-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
   .opts-btn:active{transform:translate(1px,1px);box-shadow:0 0 0 var(--ink)}
-
+ 
   /* ===== TABS ===== */
   .tab-bar{display:flex;gap:5px;background:var(--clay);border-radius:10px;padding:5px;margin-bottom:1.5rem;border:1px solid var(--clay-line)}
   .tab{flex:1;padding:9px 4px;border:none;background:transparent;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
   .tab:hover{color:var(--ink)}
   .tab.active{background:var(--ink);color:var(--chalk);box-shadow:0 2px 0 var(--shadow)}
-
+ 
   /* ===== METRICS ===== */
   .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.5rem}
   .metric{background:var(--paper);border-radius:10px;padding:11px 10px;border:1px solid var(--clay-line);position:relative;overflow:hidden}
@@ -79,7 +81,7 @@
   .metric:nth-child(4)::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track-dark)}
   .metric-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
   .metric-val{font-family:'Archivo Black',sans-serif;font-size:19px;letter-spacing:-.01em}
-
+ 
   /* ===== WEEK GRID — "starting blocks" ===== */
   .week-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:1.25rem}
   .wk{
@@ -101,12 +103,12 @@
   }
   .wk.deload-upcoming{background:var(--go);color:var(--ink);border-color:var(--go-dark);border-style:dashed}
   .wk-phase{font-family:'Archivo',sans-serif;font-size:8.5px;margin-top:2px;opacity:.85;font-weight:500;text-transform:uppercase;letter-spacing:.03em}
-
+ 
   /* ===== CARDS ===== */
   .card{background:var(--paper);border:1px solid var(--clay-line);border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 0 var(--shadow)}
   .card-title{font-family:'Archivo Black',sans-serif;font-size:14.5px;margin-bottom:13px;display:flex;align-items:center;gap:8px;letter-spacing:-.005em}
   .card-title i{color:var(--track);font-size:16px}
-
+ 
   /* ===== SESSIONS ===== */
   .session-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px dashed var(--clay-line);font-size:13px}
   .session-row:last-child{border-bottom:none}
@@ -124,7 +126,7 @@
   .type-Drill{background:#FCEFC7;color:#8A6D14}
   .type-End{background:#D6E8F0;color:#205C76}
   .type-Rest{background:var(--clay);color:var(--ink-soft)}
-
+ 
   /* ===== SESSION ACTION BUTTONS ===== */
   .sess-actions{display:flex;gap:4px}
   .sess-btn{
@@ -140,7 +142,7 @@
   .sess-btn.is-active-done{background:var(--sage);border-color:var(--sage-deep);color:var(--chalk);animation:pop .3s ease}
   .sess-btn.is-active-skip{background:#F2D9D2;border-color:var(--track);color:var(--track-dark);animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
-
+ 
   /* ===== FEEL LOG ===== */
   .feel-row{display:flex;gap:6px;margin:11px 0 10px}
   .feel-btn{
@@ -151,13 +153,13 @@
   }
   .feel-btn:hover{border-color:var(--ink-faint);transform:translateY(-1px)}
   .feel-btn.sel{background:var(--go);color:var(--ink);border-color:var(--go-dark);font-weight:700;box-shadow:0 2px 0 var(--go-dark);transform:translateY(-1px)}
-
+ 
   /* ===== FORM ELEMENTS ===== */
   textarea,input,select{background:var(--clay);border:1.5px solid var(--clay-line);border-radius:9px;padding:9px 11px;font-size:13px;color:var(--ink);font-family:inherit;outline:none;transition:border-color .15s}
   textarea:focus,input:focus,select:focus{border-color:var(--track)}
   .notes-area{width:100%;height:64px;resize:none}
   .btn-row{display:flex;gap:8px;margin-top:11px;align-items:center}
-
+ 
   /* ===== BUTTONS ===== */
   button.btn{padding:9px 15px;font-size:12.5px;font-weight:600;border-radius:9px;cursor:pointer;font-family:inherit;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);transition:all .12s;display:inline-flex;align-items:center;gap:5px;justify-content:center}
   button.btn:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--ink)}
@@ -167,20 +169,20 @@
   button.btn-danger{background:var(--paper);color:var(--track-dark);border-color:#E0AFA0}
   button.btn-danger:hover{box-shadow:2px 2px 0 #E0AFA0}
   button.btn-sm{padding:4px 9px;font-size:11px}
-
+ 
   /* ===== PHASE BANNER ===== */
   .phase-banner{
     border-left:4px solid var(--track);padding:10px 14px;background:linear-gradient(90deg, #FCE0D9, var(--chalk) 90%);
     border-radius:0 10px 10px 0;margin-bottom:1.25rem;font-size:13px;color:#4A453E;line-height:1.55
   }
   .phase-banner strong{color:var(--ink);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11.5px;text-transform:uppercase}
-
+ 
   /* ===== MODAL ===== */
   .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(28,27,25,.55);z-index:100;align-items:flex-start;justify-content:center;padding-top:60px;backdrop-filter:blur(2px)}
   .modal-backdrop.open{display:flex}
   .modal{background:var(--paper);border-radius:16px;padding:1.4rem;width:100%;max-width:520px;margin:0 1rem;box-shadow:0 12px 0 rgba(28,27,25,.12), 0 20px 40px rgba(28,27,25,.25)}
   .edit-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);margin:11px 0 5px;text-transform:uppercase;letter-spacing:.04em}
-
+ 
   /* ===== PROGRESS BARS ===== */
   .progress-row{display:flex;gap:9px;align-items:center;padding:5px 0;font-size:13px}
   .progress-wk{width:48px;font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-size:11px;font-weight:600;flex-shrink:0}
@@ -193,13 +195,13 @@
   .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
   .dot-done{background:var(--sage);box-shadow:0 0 0 2px #DCEBDA}
   .dot-empty{background:var(--clay-line)}
-
+ 
   /* ===== STRENGTH TABLE ===== */
   .strength-grid{display:grid;grid-template-columns:108px repeat(4,1fr);gap:4px;font-size:12px}
   .strength-grid .hdr{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-faint);text-align:center;padding:5px 0;text-transform:uppercase}
   .strength-grid .lbl{font-weight:700;padding:6px 0;border-bottom:1px dashed var(--clay-line);font-size:12px}
   .strength-grid .val{font-family:'JetBrains Mono',monospace;color:var(--ink-soft);text-align:center;padding:6px 0;border-bottom:1px dashed var(--clay-line);font-size:10.5px}
-
+ 
   /* ===== EXPAND PANEL ===== */
   .expand-btn{background:var(--clay);border:1px solid var(--clay-line);cursor:pointer;color:var(--ink-soft);font-size:11px;font-weight:600;padding:4px 9px;border-radius:7px;font-family:inherit;display:inline-flex;align-items:center;gap:4px;margin-top:6px;transition:all .15s}
   .expand-btn:hover{background:var(--go);border-color:var(--go-dark);color:var(--ink)}
@@ -212,10 +214,10 @@
   .expand-panel li{margin-bottom:4px}
   .expand-panel p{margin-bottom:6px}
   .expand-panel strong{font-weight:700;color:var(--ink)}
-
+ 
   /* ===== MISC ===== */
   ::placeholder{color:var(--ink-faint)}
-
+ 
   /* ===== CHAT UI ===== */
   .chat-context-bar{display:flex;align-items:center;gap:7px;padding:8px 12px;background:linear-gradient(90deg,#E5DEF5,var(--chalk) 90%);border-radius:9px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5B3FA0;border:1px solid #C5B8EE}
   .chat-context-bar i{font-size:14px;flex-shrink:0}
@@ -245,7 +247,7 @@
   .typing-dot:nth-child(2){animation-delay:.2s}
   .typing-dot:nth-child(3){animation-delay:.4s}
   @keyframes typingPulse{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
-
+ 
     /* ===== GLOSSARY ===== */
   .gloss-item{border:1px solid var(--clay-line);border-radius:10px;margin-bottom:8px;overflow:hidden}
   .gloss-header{
@@ -274,7 +276,7 @@
   .gloss-cue{color:var(--ink-soft);line-height:1.5}
   .gloss-note{display:flex;align-items:flex-start;gap:7px;margin-top:11px;padding:9px 11px;background:linear-gradient(135deg,#FCEFC7,var(--chalk) 150%);border-radius:8px;font-size:12px;color:#5A4710;line-height:1.55}
   .gloss-note i{color:#C99A1F;flex-shrink:0;margin-top:1px}
-
+ 
   @media (max-width:420px){
     .metrics{grid-template-columns:repeat(2,1fr)}
     .week-grid{grid-template-columns:repeat(4,1fr)}
@@ -285,7 +287,7 @@
 </head>
 <body>
 <div class="app">
-
+ 
 <div class="app-header">
   <div class="brand-mark">
     <div class="lane-num">18</div>
@@ -299,14 +301,14 @@
     <button class="opts-btn" onclick="openSettings()"><i class="ti ti-settings"></i> Options</button>
   </div>
 </div>
-
+ 
 <div class="tab-bar">
   <button class="tab active" onclick="switchTab(0,this)"><i class="ti ti-clipboard-list"></i> Sessions</button>
   <button class="tab" onclick="switchTab(1,this)"><i class="ti ti-chart-line"></i> Progress</button>
   <button class="tab" onclick="switchTab(2,this)"><i class="ti ti-layout-list"></i> Program</button>
   <button class="tab" onclick="switchTab(3,this)"><i class="ti ti-robot"></i> Coach AI</button>
 </div>
-
+ 
 <!-- TAB 0: SESSIONS -->
 <div id="tab0">
   <div class="metrics">
@@ -338,7 +340,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- TAB 1: PROGRESS -->
 <div id="tab1" style="display:none">
   <div class="card">
@@ -361,7 +363,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- TAB 2: PROGRAM -->
 <div id="tab2" style="display:none">
   <div class="card">
@@ -378,39 +380,39 @@
     <div id="glossary"></div>
   </div>
 </div>
-
+ 
 <!-- TAB 3: COACH AI -->
 <div id="tab3" style="display:none">
   <div class="chat-context-bar" id="chatContextBar">
     <i class="ti ti-info-circle"></i>
     <span id="chatContextText">Sending current week + session data with every message</span>
   </div>
-
+ 
   <div class="chat-suggestions" id="chatSuggestions">
     <p class="chat-suggest-label">Suggested questions</p>
     <div class="suggest-grid" id="suggestGrid"></div>
   </div>
-
+ 
   <div class="chat-messages" id="chatMessages">
     <div class="chat-bubble assistant">
       <div class="bubble-content">Hey Princess! I'm your sprint coaching assistant. I know the full 18-week program and your profile — ask me anything about sessions, exercises, technique, or how training is going.</div>
       <div class="bubble-time">Coach AI · powered by Groq</div>
     </div>
   </div>
-
+ 
   <div class="chat-input-wrap">
     <textarea class="chat-input" id="chatInput" placeholder="Ask about a session, drill, or how training is going…" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
     <button class="chat-send" id="chatSend" onclick="sendChat()"><i class="ti ti-send"></i></button>
   </div>
 </div>
-
+ 
 </div>
-
+ 
 <!-- EDIT MODAL -->
 <div class="modal-backdrop" id="editModal">
   <div class="modal" id="editModalContent"></div>
 </div>
-
+ 
 <script src="program-data.js"></script>
 <script>
 // ===== SUPABASE SYNC =====
@@ -419,7 +421,7 @@
 const SUPABASE_URL = 'https://jmkslokukidwgwcvcsoc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_IMHlk7X_fzA0lsIDVukL4Q_t1Eyt3a2';
 const ATHLETE_KEY = 'scubaa';
-
+ 
 let sb = null;
 let syncStatus = 'offline'; // 'offline' | 'syncing' | 'synced' | 'error'
 try {
@@ -427,7 +429,7 @@ try {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 } catch(e){ console.log('Supabase init failed', e); }
-
+ 
 function setSyncStatus(s){
   syncStatus = s;
   const el = document.getElementById('syncIndicator');
@@ -441,16 +443,29 @@ function setSyncStatus(s){
   const [dot,color,label] = map[s]||map.offline;
   el.innerHTML = `<span style="color:${color}">${dot}</span> ${label}`;
 }
-
+ 
 let syncTimer = null;
 function queueSync(){
   if(!sb) return; // no backend configured — localStorage only
   setSyncStatus('syncing');
   clearTimeout(syncTimer);
-  // debounce so rapid taps (mark done, feel log, etc) don't spam the network
-  syncTimer = setTimeout(pushToSupabase, 1200);
+  // debounce so rapid taps (mark done, feel log, etc) don't spam the network —
+  // shortened from 1200ms so a quick refresh right after an edit is far less
+  // likely to cancel the pending push before it fires
+  syncTimer = setTimeout(pushToSupabase, 400);
 }
-
+ 
+// Belt-and-suspenders: if the tab is closed, refreshed, or backgrounded while
+// a debounced push is still pending, fire it immediately instead of letting
+// the timer get killed with the page. Combined with the lastModified check
+// in initSync above, this makes a lost edit essentially impossible.
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'hidden' && syncTimer){
+    clearTimeout(syncTimer);
+    pushToSupabase();
+  }
+});
+ 
 async function pushToSupabase(){
   if(!sb) return;
   try {
@@ -465,7 +480,7 @@ async function pushToSupabase(){
     setSyncStatus('error');
   }
 }
-
+ 
 async function pullFromSupabase(){
   if(!sb) return null;
   try {
@@ -481,28 +496,44 @@ async function pullFromSupabase(){
     return null;
   }
 }
-
-let state = { currentWeek:0, sessions:{}, weekLogs:{}, times:[], customBreakdowns:{}, sessionEdits:{} };
+ 
+let state = { currentWeek:0, sessions:{}, weekLogs:{}, times:[], customBreakdowns:{}, sessionEdits:{}, lastModified:0 };
 try{ const s=localStorage.getItem('sprintTracker18'); if(s) state=JSON.parse(s); }catch(e){}
-
+if(!state.lastModified) state.lastModified = 0;
+ 
 function persist(){
+  // Stamp every local save so we can tell, on the next load, whether this
+  // device's copy is newer than whatever Supabase has — this is what stops
+  // a stale remote pull from silently overwriting a just-made edit.
+  state.lastModified = Date.now();
   try{ localStorage.setItem('sprintTracker18', JSON.stringify(state)); }catch(e){}
   queueSync();
 }
-
+ 
 // On load: try to pull the latest from Supabase (in case it changed elsewhere),
-// but only adopt it if it's newer than nothing we've already got locally.
-// Local write always wins for anything mid-edit — this just seeds from remote on first load.
+// but only adopt it if it's actually newer than what's already on this device.
+// Comparing lastModified timestamps (not just "does remote have any data")
+// is what prevents a debounced push that hadn't landed yet from getting
+// clobbered by a stale remote copy on refresh.
 async function initSync(){
   if(!sb) { setSyncStatus('offline'); return; }
   setSyncStatus('syncing');
   const remote = await pullFromSupabase();
   if(remote && remote.state && Object.keys(remote.state).length){
-    // Remote already has data — that's the source of truth, adopt it.
-    state = remote.state;
-    try{ localStorage.setItem('sprintTracker18', JSON.stringify(state)); }catch(e){}
-    refresh();
-    setSyncStatus('synced');
+    const remoteModified = remote.state.lastModified || 0;
+    const localModified = state.lastModified || 0;
+    if(remoteModified > localModified){
+      // Remote genuinely has newer data than this device — adopt it.
+      state = remote.state;
+      try{ localStorage.setItem('sprintTracker18', JSON.stringify(state)); }catch(e){}
+      refresh();
+      setSyncStatus('synced');
+    } else {
+      // This device's copy is the same age or newer — most likely an edit
+      // that hadn't finished pushing yet before the reload. Keep it and
+      // re-push instead of losing it.
+      await pushToSupabase();
+    }
   } else if(remote){
     // Remote row exists but is empty — this device has the only copy so far.
     // Push whatever's in local storage up to Supabase now.
@@ -511,7 +542,7 @@ async function initSync(){
     setSyncStatus('error');
   }
 }
-
+ 
 function applySessionEdits(){
   if(!state.sessionEdits) return;
   Object.entries(state.sessionEdits).forEach(([key,edit])=>{
@@ -523,9 +554,9 @@ function applySessionEdits(){
   });
 }
 applySessionEdits();
-
+ 
 function sk(w,d){ return `w${w}d${d}`; }
-
+ 
 function buildGrid(){
   const g = document.getElementById('weekGrid');
   g.innerHTML='';
@@ -550,7 +581,7 @@ function buildGrid(){
   const feels=Object.values(state.weekLogs).filter(l=>l&&l.feel).map(l=>l.feel);
   document.getElementById('m-feel').textContent=feels.length?(feels.reduce((a,b)=>a+b,0)/feels.length).toFixed(1):'—';
 }
-
+ 
 function buildSessions(){
   const w=state.currentWeek;
   document.getElementById('weekTitle').textContent=`Week ${w+1} — ${WEEKS[w].phase}${WEEKS[w].deload?' (Deload)':''}`;
@@ -583,7 +614,7 @@ function buildSessions(){
     list.appendChild(row);
   });
 }
-
+ 
 function mark(key,status){
   state.sessions[key]=state.sessions[key]===status?'pending':status;
   persist();
@@ -599,7 +630,7 @@ function mark(key,status){
   if(skipBtn) skipBtn.classList.toggle('is-active-skip', s==='skip');
   buildGrid();
 }
-
+ 
 function setFeel(val,btn){
   const w=state.currentWeek;
   if(!state.weekLogs[w]) state.weekLogs[w]={};
@@ -607,7 +638,7 @@ function setFeel(val,btn){
   document.querySelectorAll('#feelBtns .feel-btn').forEach((b,i)=>b.classList.toggle('sel',i+1===state.weekLogs[w].feel));
   persist();
 }
-
+ 
 function saveWeekLog(){
   const w=state.currentWeek;
   if(!state.weekLogs[w]) state.weekLogs[w]={};
@@ -618,14 +649,14 @@ function saveWeekLog(){
   m.textContent='Saved ✓';
   setTimeout(()=>m.textContent='',2000);
 }
-
+ 
 function loadWeekLog(){
   const w=state.currentWeek;
   const log=state.weekLogs[w]||{};
   document.getElementById('weekNotes').value=log.notes||'';
   document.querySelectorAll('#feelBtns .feel-btn').forEach((b,i)=>b.classList.toggle('sel',i+1===log.feel));
 }
-
+ 
 function editSession(w,d){
   const s=WEEKS[w].sessions[d];
   document.getElementById('editModalContent').innerHTML=`
@@ -642,7 +673,7 @@ function editSession(w,d){
     </div>`;
   document.getElementById('editModal').classList.add('open');
 }
-
+ 
 function saveEdit(w,d){
   const key=sk(w,d);
   const type=document.getElementById('eType').value;
@@ -655,9 +686,9 @@ function saveEdit(w,d){
   closeModal();
   buildSessions();
 }
-
+ 
 function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
-
+ 
 function openSettings(){
   document.getElementById('editModalContent').innerHTML=`
     <p style="font-size:15px;font-weight:500;margin-bottom:12px">Options</p>
@@ -668,7 +699,7 @@ function openSettings(){
     </div>`;
   document.getElementById('editModal').classList.add('open');
 }
-
+ 
 function exportData(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -676,14 +707,14 @@ function exportData(){
   a.download='sprint_tracker_data.json';
   a.click();
 }
-
+ 
 function resetAll(){
   state={currentWeek:0,sessions:{},weekLogs:{},times:[],customBreakdowns:{},sessionEdits:{}};
   persist();
   closeModal();
   refresh();
 }
-
+ 
 function logTime(){
   const ev=document.getElementById('timeEvent').value;
   const val=document.getElementById('timeVal').value.trim();
@@ -695,9 +726,9 @@ function logTime(){
   document.getElementById('timeVal').value='';
   buildTimes();
 }
-
+ 
 function deleteTime(i){ state.times.splice(i,1); persist(); buildTimes(); }
-
+ 
 function buildTimes(){
   const el=document.getElementById('timesLog');
   if(!state.times||!state.times.length){
@@ -714,7 +745,7 @@ function buildTimes(){
     </div>`;
   }).join('');
 }
-
+ 
 function buildProgress(){
   const bars=document.getElementById('progressBars');
   bars.innerHTML='';
@@ -732,7 +763,7 @@ function buildProgress(){
       <span class="${done===nonRest.length&&nonRest.length>0?'dot dot-done':'dot dot-empty'}"></span>
     </div>`;
   });
-
+ 
   const fh=document.getElementById('feelHistory');
   const feelLabels=['','Tired','Okay','Good','Great','Peak'];
   const entries=[];
@@ -749,10 +780,10 @@ function buildProgress(){
       ${log.notes?`<p style="color:#5f5e5a;margin-top:4px;line-height:1.5">${log.notes}</p>`:''}
     </div>`).join('')
     :'<p style="font-size:13px;color:#6b6b68">No week logs yet — log in the Sessions tab.</p>';
-
+ 
   buildTimes();
 }
-
+ 
 // ===== REFERENCE GLOSSARY — all named protocols from the program doc =====
 const GLOSSARY = [
   {
@@ -917,7 +948,7 @@ const GLOSSARY = [
     note:"Walk (don't jog) between reps for proper recovery. Going out too hard on the first rep is the classic beginner endurance mistake — the goal is consistent pace, not a fast start."
   }
 ];
-
+ 
 function buildGlossary(){
   const el=document.getElementById('glossary');
   el.innerHTML=GLOSSARY.map(g=>`
@@ -937,14 +968,14 @@ function buildGlossary(){
       </div>
     </div>`).join('');
 }
-
+ 
 function toggleGloss(id){
   const body=document.getElementById('gbody-'+id);
   const chev=document.getElementById('chev-'+id);
   const open=body.classList.toggle('open');
   chev.style.transform=open?'rotate(180deg)':'rotate(0deg)';
 }
-
+ 
 function buildProgram(){
   const phases=[
     {name:'Phase 1 — Movement foundation',range:[0,3],cls:'bar-mov'},
@@ -962,7 +993,7 @@ function buildProgram(){
           <div class="progress-bar-wrap"><div class="progress-bar ${p.cls}" style="width:100%;font-size:10px">${w.focus.substring(0,58)}${w.focus.length>58?'…':''}</div></div>
         </div>`).join('')}
     </div>`).join('');
-
+ 
   const st=document.getElementById('strengthTable');
   const rows=[
     ['Hip Thrust','3×8 @60%','5×5 @70–78%','5×3 @80–84%','3×3 @82–87%'],
@@ -977,10 +1008,10 @@ function buildProgram(){
     <span class="hdr">Wks 1–4</span><span class="hdr">Wks 5–9</span><span class="hdr">Wks 10–13</span><span class="hdr">Wks 14–18</span>
     ${rows.map(r=>`<span class="lbl">${r[0]}</span>${r.slice(1).map(v=>`<span class="val">${v}</span>`).join('')}`).join('')}
   </div>`;
-
+ 
   buildGlossary();
 }
-
+ 
 function switchTab(idx,btn){
   [0,1,2,3].forEach(i=>{const t=document.getElementById('tab'+i);if(t)t.style.display=i===idx?'':'none';});
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
@@ -988,13 +1019,13 @@ function switchTab(idx,btn){
   if(idx===2) buildProgram();
   if(idx===3) buildChatSuggestions();
 }
-
+ 
 function refresh(){ buildGrid(); buildSessions(); loadWeekLog(); }
-
+ 
 document.getElementById('editModal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-
+ 
 const ATHLETE_NOTE = "Long femurs and restricted ankle dorsiflexion mean squat depth and drive-phase mechanics need extra attention — this is fixable, not structural. As a gym-strong, sprint-beginner athlete, the biggest early risk is the nervous system and connective tissue lagging behind raw strength, which is exactly why this program builds mobility and mechanics before loading speed.";
-
+ 
 // Pattern-matched static breakdown library — keyed by detection rules against session detail text
 const BREAKDOWN_RULES = [
   {
@@ -1106,7 +1137,7 @@ const BREAKDOWN_RULES = [
     note: ATHLETE_NOTE
   }
 ];
-
+ 
 function getBreakdown(w,d){
   const key=sk(w,d);
   if(state.customBreakdowns && state.customBreakdowns[key]) return state.customBreakdowns[key];
@@ -1114,7 +1145,7 @@ function getBreakdown(w,d){
   const rule=BREAKDOWN_RULES.find(r=>r.test(s));
   return rule;
 }
-
+ 
 function renderBreakdown(b){
   return `<h4>What you're doing</h4><p>${b.what}</p>
     <h4>Why it matters</h4><p>${b.why}</p>
@@ -1122,7 +1153,7 @@ function renderBreakdown(b){
     <h4>Watch for</h4><ul>${b.watch.map(h=>`<li>${h}</li>`).join('')}</ul>
     <h4>Coach's note</h4><p>${b.note}</p>`;
 }
-
+ 
 function toggleExpand(key,w,d){
   const panel=document.getElementById('exp-'+key);
   const btn=document.getElementById('expbtn-'+key);
@@ -1137,7 +1168,7 @@ function toggleExpand(key,w,d){
   panel.classList.add('open');
   btn.innerHTML='<i class="ti ti-chevron-up" style="font-size:11px"></i> Collapse';
 }
-
+ 
 function editBreakdown(w,d){
   const b=getBreakdown(w,d);
   document.getElementById('editModalContent').innerHTML=`
@@ -1158,7 +1189,7 @@ function editBreakdown(w,d){
     </div>`;
   document.getElementById('editModal').classList.add('open');
 }
-
+ 
 function saveBreakdown(w,d){
   const key=sk(w,d);
   if(!state.customBreakdowns) state.customBreakdowns={};
@@ -1175,7 +1206,7 @@ function saveBreakdown(w,d){
   const panel=document.getElementById('exp-'+key);
   if(panel) { panel.innerHTML=renderBreakdown(state.customBreakdowns[key])+`<div class="btn-row" style="margin-top:8px"><button class="btn btn-sm" onclick="editBreakdown(${w},${d})"><i class="ti ti-edit"></i> Edit this breakdown</button></div>`; }
 }
-
+ 
 // ===== CHAT / COACH AI =====
 const CHAT_SUGGESTIONS = [
   "What should I focus on in today's session?",
@@ -1189,9 +1220,9 @@ const CHAT_SUGGESTIONS = [
   "What should the 100m time look like by week 12?",
   "Explain PAP and why it's in the program"
 ];
-
+ 
 let chatHistory = [];
-
+ 
 function buildChatSuggestions(){
   const grid=document.getElementById('suggestGrid');
   if(!grid) return;
@@ -1199,13 +1230,13 @@ function buildChatSuggestions(){
     `<button class="suggest-chip" onclick="useSuggestion(this)">${s}</button>`
   ).join('');
 }
-
+ 
 function useSuggestion(btn){
   document.getElementById('chatInput').value=btn.textContent;
   document.getElementById('chatSuggestions').style.display='none';
   sendChat();
 }
-
+ 
 function buildAppContext(){
   const w=state.currentWeek;
   const wk=WEEKS[w];
@@ -1226,30 +1257,30 @@ function buildAppContext(){
   ].join('\n');
   const glossaryIndex=GLOSSARY.map(g=>`${g.name} (${g.tag})`).join('; ');
   return `ATHLETE PROFILE: ${ATHLETE_NOTE}
-
+ 
 PROGRAM OVERVIEW (4 phases, 18 weeks):
 ${phaseOverview}
-
+ 
 NAMED PROTOCOLS AVAILABLE (glossary — pull specifics from these when relevant, don't just say "do your mobility work"):
 ${glossaryIndex}
-
+ 
 CURRENT WEEK: ${w+1} of 18 — ${wk.phase} phase${wk.deload?' (DELOAD WEEK)':''}
 WEEK FOCUS: ${wk.focus}
 THIS WEEK'S FULL SESSION PLAN:
 ${thisWeekFull}
-
+ 
 NEARBY WEEKS FOR CONTEXT:
 ${adjacentWeeks}
-
+ 
 TOTAL SESSIONS COMPLETED SO FAR: ${totalDone}
 ${log.feel?`FEEL THIS WEEK: ${feelLabels[log.feel]}${log.notes?' — "'+log.notes+'"':''}`:''}
 ${recentFeels.length?'RECENT FEELS:\n'+recentFeels.join('\n'):''}
 ${recentTimes.length?'RECENT TIMES:\n'+recentTimes.join('\n'):'NO TIMES LOGGED YET'}`;
 }
-
+ 
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
-
+ 
 function appendBubble(role,text){
   const msgs=document.getElementById('chatMessages');
   const bubble=document.createElement('div');
@@ -1259,7 +1290,7 @@ function appendBubble(role,text){
   msgs.appendChild(bubble);
   msgs.scrollTop=msgs.scrollHeight;
 }
-
+ 
 function showTyping(){
   const msgs=document.getElementById('chatMessages');
   const el=document.createElement('div');
@@ -1268,7 +1299,7 @@ function showTyping(){
   msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
 }
 function hideTyping(){const el=document.getElementById('typingIndicator');if(el)el.remove();}
-
+ 
 async function sendChat(){
   const input=document.getElementById('chatInput');
   const sendBtn=document.getElementById('chatSend');
@@ -1293,7 +1324,7 @@ async function sendChat(){
   }
   sendBtn.disabled=false;
 }
-
+ 
 // Final init
 refresh();
 initSync();
@@ -1309,3 +1340,4 @@ if('serviceWorker' in navigator){
 </script>
 </body>
 </html>
+ 
