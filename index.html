@@ -176,9 +176,10 @@
   .phase-banner strong{color:var(--ink);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11.5px;text-transform:uppercase}
 
   /* ===== MODAL ===== */
-  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(28,27,25,.55);z-index:100;align-items:flex-start;justify-content:center;padding-top:60px;backdrop-filter:blur(2px)}
-  .modal-backdrop.open{display:flex}
-  .modal{background:var(--paper);border-radius:16px;padding:1.4rem;width:100%;max-width:520px;margin:0 1rem;box-shadow:0 12px 0 rgba(28,27,25,.12), 0 20px 40px rgba(28,27,25,.25)}
+  .modal-backdrop{display:flex;position:fixed;inset:0;background:rgba(28,27,25,.55);z-index:100;align-items:flex-start;justify-content:center;padding-top:60px;backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .modal-backdrop.open{opacity:1;pointer-events:auto}
+  .modal{background:var(--paper);border-radius:16px;padding:1.4rem;width:100%;max-width:520px;margin:0 1rem;box-shadow:0 12px 0 rgba(28,27,25,.12), 0 20px 40px rgba(28,27,25,.25);transform:translateY(16px) scale(.97);transition:transform .24s cubic-bezier(.34,1.56,.64,1)}
+  .modal-backdrop.open .modal{transform:translateY(0) scale(1)}
   .edit-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);margin:11px 0 5px;text-transform:uppercase;letter-spacing:.04em}
 
   /* ===== PROGRESS BARS ===== */
@@ -206,6 +207,14 @@
   .expand-panel{display:none;margin-top:10px;padding:12px 14px;background:linear-gradient(135deg, var(--chalk), var(--clay) 140%);border-radius:10px;border:1px solid var(--clay-line);border-left:4px solid var(--go-dark);font-size:13px;line-height:1.7;color:#3a3a38}
   .expand-panel.open{display:block;animation:slideDown .25s ease}
   @keyframes slideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .tab-active-enter{animation:tabIn .26s ease}
+  @keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .sync-pulse{animation:syncPulse 1s ease-in-out infinite}
+  #saveMsg{transition:opacity .35s ease}
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+  }
   .expand-panel h4{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:var(--track-dark);margin:11px 0 5px;text-transform:uppercase;letter-spacing:.05em}
   .expand-panel h4:first-child{margin-top:0}
   .expand-panel ul{padding-left:18px;margin:5px 0}
@@ -229,8 +238,9 @@
   .suggest-grid{display:flex;flex-wrap:wrap;gap:6px}
   .suggest-chip{padding:7px 12px;background:var(--paper);border:1.5px solid var(--clay-line);border-radius:20px;font-size:12px;color:var(--ink-soft);cursor:pointer;font-family:inherit;transition:all .15s;font-weight:500}
   .suggest-chip:hover{border-color:var(--track);color:var(--track);background:#FDF0ED;transform:translateY(-1px)}
-  .chat-messages{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;min-height:200px;max-height:52vh;overflow-y:auto;padding:4px 0}
-  .chat-bubble{display:flex;flex-direction:column;max-width:88%}
+  .chat-messages{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;min-height:200px;max-height:52vh;overflow-y:auto;padding:4px 0;scroll-behavior:smooth}
+  .chat-bubble{display:flex;flex-direction:column;max-width:88%;animation:bubbleIn .28s ease}
+  @keyframes bubbleIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .chat-bubble.assistant{align-self:flex-start}
   .chat-bubble.user{align-self:flex-end}
   .bubble-content{padding:11px 14px;border-radius:14px;font-size:13.5px;line-height:1.6}
@@ -505,7 +515,7 @@ function setSyncStatus(s){
     error:   ['●','var(--track)','Sync error — saved locally']
   };
   const [dot,color,label] = map[s]||map.offline;
-  el.innerHTML = `<span style="color:${color}">${dot}</span> ${label}`;
+  el.innerHTML = `<span class="${s==='syncing'?'sync-pulse':''}" style="color:${color}">${dot}</span> ${label}`;
 }
 
 let syncTimer = null;
@@ -710,8 +720,10 @@ function saveWeekLog(){
   persist();
   buildGrid();
   const m=document.getElementById('saveMsg');
+  m.style.opacity='1';
   m.textContent='Saved ✓';
-  setTimeout(()=>m.textContent='',2000);
+  setTimeout(()=>{ m.style.opacity='0'; }, 1500);
+  setTimeout(()=>{ m.textContent=''; m.style.opacity='1'; }, 1850);
 }
 
 function loadWeekLog(){
@@ -1127,6 +1139,8 @@ function buildProgram(){
 
 function switchTab(idx,btn){
   [0,1,2,3,4].forEach(i=>{const t=document.getElementById('tab'+i);if(t)t.style.display=i===idx?'':'none';});
+  const active=document.getElementById('tab'+idx);
+  if(active){ active.classList.remove('tab-active-enter'); void active.offsetWidth; active.classList.add('tab-active-enter'); }
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
   if(idx===1) buildProgress();
   if(idx===2) buildProgram();
