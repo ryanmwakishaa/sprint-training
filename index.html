@@ -213,6 +213,11 @@
   .expand-panel p{margin-bottom:6px}
   .expand-panel strong{font-weight:700;color:var(--ink)}
 
+  /* ===== COACH VIEW ===== */
+  .flag{background:#FCE0D9;border:1px solid #F2C4B8;border-radius:10px;padding:10px 13px;font-size:12.5px;margin-bottom:8px;display:flex;gap:8px;align-items:flex-start}
+  .flag i{color:var(--track-dark);margin-top:1px}
+  .c-empty{font-size:13px;color:var(--ink-faint);padding:8px 0}
+
   /* ===== MISC ===== */
   ::placeholder{color:var(--ink-faint)}
 
@@ -305,6 +310,7 @@
   <button class="tab" onclick="switchTab(1,this)"><i class="ti ti-chart-line"></i> Progress</button>
   <button class="tab" onclick="switchTab(2,this)"><i class="ti ti-layout-list"></i> Program</button>
   <button class="tab" onclick="switchTab(3,this)"><i class="ti ti-robot"></i> Coach AI</button>
+  <button class="tab" onclick="switchTab(4,this)"><i class="ti ti-shield-lock"></i> Coach</button>
 </div>
 
 <!-- TAB 0: SESSIONS -->
@@ -401,6 +407,54 @@
   <div class="chat-input-wrap">
     <textarea class="chat-input" id="chatInput" placeholder="Ask about a session, drill, or how training is going…" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
     <button class="chat-send" id="chatSend" onclick="sendChat()"><i class="ti ti-send"></i></button>
+  </div>
+</div>
+
+<!-- TAB 4: COACH VIEW (PIN-gated, read-only) -->
+<div id="tab4" style="display:none">
+  <div id="coachGate" class="card" style="text-align:center;padding:2.2rem 1.25rem">
+    <i class="ti ti-lock" style="font-size:32px;color:var(--ink-faint);margin-bottom:10px;display:block"></i>
+    <p style="font-weight:700;margin-bottom:6px">Coach access only</p>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px">Enter the coach PIN to view the dashboard.</p>
+    <div style="display:flex;gap:8px;justify-content:center;max-width:230px;margin:0 auto">
+      <input id="coachPinInput" type="password" inputmode="numeric" placeholder="PIN" style="text-align:center;letter-spacing:4px;width:110px" onkeydown="if(event.key==='Enter')tryCoachUnlock()">
+      <button class="btn btn-primary" onclick="tryCoachUnlock()">Unlock</button>
+    </div>
+    <p id="coachPinError" style="font-size:11.5px;color:var(--track);margin-top:10px;display:none">Wrong PIN — try again.</p>
+  </div>
+
+  <div id="coachDashboard" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span id="coachSyncIndicator" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint)"></span>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm" onclick="refreshCoachView()"><i class="ti ti-refresh"></i> Refresh</button>
+        <button class="btn btn-sm btn-danger" onclick="lockCoachView()"><i class="ti ti-lock"></i> Lock</button>
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Week</div><div class="metric-val" id="c-week">—</div></div>
+      <div class="metric"><div class="metric-label">Phase</div><div class="metric-val" id="c-phase" style="font-size:13px;padding-top:3px">—</div></div>
+      <div class="metric"><div class="metric-label">Sessions done</div><div class="metric-val" id="c-done">—</div></div>
+      <div class="metric"><div class="metric-label">Feel avg</div><div class="metric-val" id="c-feel">—</div></div>
+    </div>
+    <div id="c-flags"></div>
+    <div class="card">
+      <p class="card-title"><i class="ti ti-calendar-week"></i> Current week</p>
+      <div class="phase-banner" id="c-phaseBanner"></div>
+      <div id="c-sessionList"></div>
+    </div>
+    <div class="card">
+      <p class="card-title"><i class="ti ti-mood-smile"></i> Feel trend</p>
+      <div id="c-feelTrend"></div>
+    </div>
+    <div class="card">
+      <p class="card-title"><i class="ti ti-stopwatch"></i> Performance times</p>
+      <div id="c-timesLog"></div>
+    </div>
+    <div class="card">
+      <p class="card-title"><i class="ti ti-chart-bar"></i> Overall progress</p>
+      <div id="c-weekProgress"></div>
+    </div>
   </div>
 </div>
 
@@ -1011,11 +1065,12 @@ function buildProgram(){
 }
 
 function switchTab(idx,btn){
-  [0,1,2,3].forEach(i=>{const t=document.getElementById('tab'+i);if(t)t.style.display=i===idx?'':'none';});
+  [0,1,2,3,4].forEach(i=>{const t=document.getElementById('tab'+i);if(t)t.style.display=i===idx?'':'none';});
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
   if(idx===1) buildProgress();
   if(idx===2) buildProgram();
   if(idx===3) buildChatSuggestions();
+  if(idx===4) openCoachTab(); else stopCoachPolling();
 }
 
 function refresh(){ buildGrid(); buildSessions(); loadWeekLog(); }
@@ -1321,6 +1376,168 @@ async function sendChat(){
     appendBubble('assistant','Could not reach the server. Make sure the app is deployed on Netlify and GROQ_API_KEY is set in Site Settings &gt; Environment Variables.');
   }
   sendBtn.disabled=false;
+}
+
+// ===== COACH VIEW (PIN-gated, read-only) =====
+// Change this to whatever PIN you want to require for coach access.
+// This is a client-side deterrent, not real security — anyone reading the
+// page source (or opening dev tools) can see it. It's meant to keep a
+// curious athlete out of the coach view on a shared/installed app, not to
+// stop a determined attacker.
+const COACH_PIN = '2468';
+
+let coachViewState = null;
+let coachPollTimer = null;
+
+function isCoachUnlocked(){
+  try{ return localStorage.getItem('coachUnlocked') === 'true'; }catch(e){ return false; }
+}
+
+function tryCoachUnlock(){
+  const input = document.getElementById('coachPinInput');
+  const err = document.getElementById('coachPinError');
+  if(input.value === COACH_PIN){
+    try{ localStorage.setItem('coachUnlocked','true'); }catch(e){}
+    input.value='';
+    err.style.display='none';
+    openCoachDashboard();
+  } else {
+    err.style.display='block';
+    input.value='';
+    input.focus();
+  }
+}
+
+function lockCoachView(){
+  try{ localStorage.removeItem('coachUnlocked'); }catch(e){}
+  stopCoachPolling();
+  document.getElementById('coachGate').style.display='block';
+  document.getElementById('coachDashboard').style.display='none';
+}
+
+function openCoachTab(){
+  if(isCoachUnlocked()){
+    openCoachDashboard();
+  } else {
+    document.getElementById('coachGate').style.display='block';
+    document.getElementById('coachDashboard').style.display='none';
+    setTimeout(()=>{ const el=document.getElementById('coachPinInput'); if(el) el.focus(); }, 50);
+  }
+}
+
+async function openCoachDashboard(){
+  document.getElementById('coachGate').style.display='none';
+  document.getElementById('coachDashboard').style.display='block';
+  await refreshCoachView();
+  startCoachPolling();
+}
+
+function setCoachSyncStatus(s){
+  const el=document.getElementById('coachSyncIndicator');
+  if(!el) return;
+  const map={
+    loading:['●','var(--go-dark)','Loading…'],
+    live:['●','var(--sage-deep)','Live'],
+    error:['●','var(--track)','Could not load — check connection']
+  };
+  const [dot,color,label]=map[s]||map.loading;
+  el.innerHTML=`<span style="color:${color}">${dot}</span> ${label}`;
+}
+
+// Pulls a fresh, independent copy of the athlete's data purely for display —
+// deliberately never touches the shared `state` object used by the Sessions/
+// Progress/Program tabs, so viewing the Coach tab can never clobber an
+// in-progress edit on this device the way a naive remote-overwrite would.
+async function refreshCoachView(){
+  setCoachSyncStatus('loading');
+  if(!sb){
+    setCoachSyncStatus('error');
+    return;
+  }
+  const remote = await pullFromSupabase();
+  if(remote && remote.state && Object.keys(remote.state).length){
+    coachViewState = remote.state;
+    renderCoachView();
+    setCoachSyncStatus('live');
+  } else {
+    setCoachSyncStatus('error');
+  }
+}
+
+function startCoachPolling(){
+  stopCoachPolling();
+  coachPollTimer = setInterval(refreshCoachView, 20000);
+}
+function stopCoachPolling(){
+  if(coachPollTimer){ clearInterval(coachPollTimer); coachPollTimer=null; }
+}
+
+function renderCoachView(){
+  if(!coachViewState) return;
+  const w = coachViewState.currentWeek || 0;
+  const wk = WEEKS[w];
+
+  let totalDone=0, totalSessions=0;
+  WEEKS.forEach((wkX,i)=>{
+    wkX.sessions.forEach((_,d)=>{
+      totalSessions++;
+      if(coachViewState.sessions && coachViewState.sessions[sk(i,d)]==='done') totalDone++;
+    });
+  });
+  document.getElementById('c-week').textContent = `${w+1} / 18`;
+  document.getElementById('c-phase').textContent = wk.phase;
+  document.getElementById('c-done').textContent = `${totalDone}/${totalSessions}`;
+  const feels = Object.values(coachViewState.weekLogs||{}).filter(l=>l&&l.feel).map(l=>l.feel);
+  document.getElementById('c-feel').textContent = feels.length ? (feels.reduce((a,b)=>a+b,0)/feels.length).toFixed(1) : '—';
+
+  const feelLabels=['','Tired','Okay','Good','Great','Peak'];
+  const flags=[];
+  const thisWeekLog=(coachViewState.weekLogs||{})[w];
+  if(thisWeekLog && thisWeekLog.feel && thisWeekLog.feel<=2){
+    flags.push(`Feel logged as "${feelLabels[thisWeekLog.feel]}" this week${thisWeekLog.notes?' — "'+thisWeekLog.notes+'"':''}`);
+  }
+  const skippedThisWeek = wk.sessions.filter((_,d)=>coachViewState.sessions && coachViewState.sessions[sk(w,d)]==='skip').length;
+  if(skippedThisWeek>0){
+    flags.push(`${skippedThisWeek} session${skippedThisWeek>1?'s':''} skipped this week`);
+  }
+  document.getElementById('c-flags').innerHTML = flags.map(f=>`<div class="flag"><i class="ti ti-alert-triangle"></i><span>${f}</span></div>`).join('');
+
+  document.getElementById('c-phaseBanner').innerHTML = `<strong>Week ${w+1}:</strong> ${PHASE_NOTES[w]}`;
+  document.getElementById('c-sessionList').innerHTML = wk.sessions.map((s,d)=>{
+    const key=sk(w,d);
+    const status=(coachViewState.sessions && coachViewState.sessions[key])||'pending';
+    const bc=status==='done'?'badge-done':status==='skip'?'badge-skip':s.type==='Rest'?'badge-rest':'badge-pending';
+    const bl=status==='done'?'Done':status==='skip'?'Skipped':s.type==='Rest'?'Rest':'Upcoming';
+    return `<div class="session-row">
+      <span class="day-col">${s.day}</span>
+      <span class="detail-col"><span class="type-pill type-${s.type}">${TYPE_LABELS[s.type]||s.type}</span>${s.detail}</span>
+      <span class="badge ${bc}">${bl}</span>
+    </div>`;
+  }).join('');
+
+  const feelEntries = Object.entries(coachViewState.weekLogs||{})
+    .filter(([,l])=>l && l.feel)
+    .map(([wi,l])=>({week:parseInt(wi)+1, feel:l.feel, notes:l.notes}))
+    .sort((a,b)=>b.week-a.week)
+    .slice(0,6);
+  document.getElementById('c-feelTrend').innerHTML = feelEntries.length ?
+    feelEntries.map(e=>`<div style="padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,.08);font-size:13px"><span style="font-weight:500">Week ${e.week}</span> — ${feelLabels[e.feel]}${e.notes?'<div style="color:#5f5e5a;margin-top:2px">"'+e.notes+'"</div>':''}</div>`).join('')
+    : '<p class="c-empty">No feel logs yet.</p>';
+
+  const times = (coachViewState.times||[]).slice().reverse();
+  document.getElementById('c-timesLog').innerHTML = times.length ?
+    times.map(t=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed var(--clay-line)"><span>${t.ev}</span><span><strong>${t.val}s</strong> · Week ${t.week}</span></div>`).join('')
+    : '<p class="c-empty">No times logged yet.</p>';
+
+  document.getElementById('c-weekProgress').innerHTML = WEEKS.map((wkX,i)=>{
+    const done = wkX.sessions.filter((_,d)=>coachViewState.sessions && coachViewState.sessions[sk(i,d)]==='done').length;
+    const pct = wkX.sessions.length ? Math.round((done/wkX.sessions.length)*100) : 0;
+    const barCls=i<4?'bar-mov':i<9?'bar-str':i<13?'bar-pow':'bar-spe';
+    return `<div class="progress-row">
+      <span class="progress-wk">Wk ${i+1}</span>
+      <div class="progress-bar-wrap"><div class="progress-bar ${barCls}" style="width:${Math.max(pct,2)}%">${pct>15?pct+'%':''}</div></div>
+    </div>`;
+  }).join('');
 }
 
 // Final init
