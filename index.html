@@ -358,10 +358,22 @@
   <div class="card">
     <p class="card-title"><i class="ti ti-stopwatch"></i> Performance times</p>
     <p style="font-size:13px;color:#6b6b68;margin-bottom:10px">Log timed efforts — 60m, 100m, 30m</p>
+
+    <div style="background:var(--clay);border:1px solid var(--clay-line);border-radius:10px;padding:16px 14px;margin-bottom:14px;text-align:center">
+      <div id="swDisplay" style="font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-bottom:12px">0.00</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" id="swStartBtn" onclick="toggleStopwatch()"><i class="ti ti-player-play"></i> Start</button>
+        <button class="btn" onclick="lapStopwatch()"><i class="ti ti-flag"></i> Split</button>
+        <button class="btn btn-danger" onclick="resetStopwatch()"><i class="ti ti-refresh"></i> Reset</button>
+      </div>
+      <div id="swSplits" style="margin-top:9px"></div>
+      <p id="swUseHint" style="display:none;font-size:11.5px;color:var(--sage-deep);font-weight:600;margin-top:10px"><i class="ti ti-arrow-down"></i> Time captured below — pick the event and tap Add</p>
+    </div>
+
     <div id="timesLog" style="margin-bottom:10px"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <select id="timeEvent" style="width:80px;flex-shrink:0"><option>60m</option><option>100m</option><option>30m</option><option>80m</option></select>
-      <input id="timeVal" placeholder="Time e.g. 8.24s" style="flex:1;min-width:100px" />
+      <input id="timeVal" placeholder="Time e.g. 8.24" style="flex:1;min-width:100px" />
       <input id="timeDate" type="date" style="width:140px;flex-shrink:0" />
       <button class="btn btn-primary" onclick="logTime()" style="flex-shrink:0">Add</button>
     </div>
@@ -767,6 +779,54 @@ function resetAll(){
   refresh();
 }
 
+// ===== BUILT-IN STOPWATCH =====
+let swRunning=false, swStart=0, swElapsed=0, swRAF=null, swSplits=[];
+
+function toggleStopwatch(){
+  const btn=document.getElementById('swStartBtn');
+  if(!swRunning){
+    swStart = performance.now() - swElapsed;
+    swRunning = true;
+    btn.innerHTML = '<i class="ti ti-player-pause"></i> Stop';
+    document.getElementById('swUseHint').style.display='none';
+    tickStopwatch();
+  } else {
+    swRunning = false;
+    if(swRAF) cancelAnimationFrame(swRAF);
+    btn.innerHTML = '<i class="ti ti-player-play"></i> Start';
+    const finalVal = (swElapsed/1000).toFixed(2);
+    document.getElementById('timeVal').value = finalVal;
+    const dateEl = document.getElementById('timeDate');
+    if(!dateEl.value) dateEl.valueAsDate = new Date();
+    document.getElementById('swUseHint').style.display='block';
+  }
+}
+
+function tickStopwatch(){
+  if(!swRunning) return;
+  swElapsed = performance.now() - swStart;
+  document.getElementById('swDisplay').textContent = (swElapsed/1000).toFixed(2);
+  swRAF = requestAnimationFrame(tickStopwatch);
+}
+
+function lapStopwatch(){
+  if(!swRunning) return;
+  swSplits.push((swElapsed/1000).toFixed(2));
+  document.getElementById('swSplits').innerHTML = swSplits.map((s,i)=>
+    `<span class="type-pill type-Track" style="margin:2px 3px 0 0">Split ${i+1}: ${s}s</span>`
+  ).join('');
+}
+
+function resetStopwatch(){
+  swRunning=false;
+  if(swRAF) cancelAnimationFrame(swRAF);
+  swElapsed=0; swSplits=[];
+  document.getElementById('swDisplay').textContent='0.00';
+  document.getElementById('swStartBtn').innerHTML='<i class="ti ti-player-play"></i> Start';
+  document.getElementById('swSplits').innerHTML='';
+  document.getElementById('swUseHint').style.display='none';
+}
+
 function logTime(){
   const ev=document.getElementById('timeEvent').value;
   const val=document.getElementById('timeVal').value.trim();
@@ -776,6 +836,7 @@ function logTime(){
   state.times.push({ev,val,date,week:state.currentWeek+1});
   persist();
   document.getElementById('timeVal').value='';
+  resetStopwatch();
   buildTimes();
 }
 
