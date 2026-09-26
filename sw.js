@@ -1,4 +1,4 @@
-const CACHE = 'sprint-tracker-v8';
+const CACHE = 'sprint-tracker-v9';
 
 const ASSETS = [
   '/',
