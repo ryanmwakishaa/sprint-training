@@ -160,6 +160,60 @@ const WEEKS = [
     {day:"Fri",type:"Rest",detail:"Rest. Protect the body."},
     {day:"Sat",type:"End",detail:"FINAL ENDURANCE SESSION: 2×20sec @94–96%. 3min walk. ~130–150m. EXPLOSIVE. Arc closes here."},
     {day:"Sun",type:"Rest",detail:"Program complete. Full assessment: body weight, all 1RMs, 60m + 100m times, squat depth."}
+  ]},
+  {phase:"MaxV+Race",focus:"Phase 5 begins — the high-11s target wasn't hit in Week 18. Strength shifts to maintenance-only. Reaction/block-start work added for the first time. Flying-sprint volume increases beyond Phase 4's baseline.",deload:false,sessions:[
+    {day:"Mon",type:"Gym",detail:"Mobility → STRENGTH MAINTENANCE ONLY: Hip Thrust 3×3 @72%, Nordic 3×4. Brief — capacity shifts almost entirely to sprint-specific work from here."},
+    {day:"Tue",type:"Track",detail:"Mobility → REACTION/BLOCK-START WORK (new): 6× reaction starts from a 3-point stance (or blocks) on an unpredictable signal → 4×20m starts. First dedicated start-reaction work of the program."},
+    {day:"Wed",type:"Drill",detail:"Mobility → Mach drills (A-skip, B-skip) 3×20m each → FLYING SPRINTS: 30m build-up → 20m FLY ×3, full recovery. Three fly sessions this week instead of Phase 4's two."},
+    {day:"Thu",type:"Track",detail:"Mobility → REACTION starts ×6 → 3×40m @92%. Reinforcing quick, relaxed acceleration off the start."},
+    {day:"Fri",type:"Gym",detail:"Mobility → Light: Trap Bar DL 3×3 @70%, Nordic 3×4. Maintenance."},
+    {day:"Sat",type:"Track",detail:"Mobility → FLYING SPRINTS (session 3 this week): 30m build-up → 20m FLY ×3. Chase the same rhythm and cues as Wednesday."},
+    {day:"Sun",type:"Rest",detail:"Full rest. Weigh-in."}
+  ]},
+  {phase:"MaxV+Race",focus:"Flying-sprint distance builds. Second controlled overspeed exposure this week — repeated exposure converts better than Phase 4's single session. Reaction work continues.",deload:false,sessions:[
+    {day:"Mon",type:"Track",detail:"Mobility → Mach drills → FLYING SPRINTS: 30m build-up → 30m FLY ×3 — longer fly zone than Week 19."},
+    {day:"Tue",type:"Gym",detail:"Mobility → Hip Thrust 3×3 @74%, Nordic 3×4. Maintenance, brief."},
+    {day:"Wed",type:"Track",detail:"Mobility → REACTION starts ×6 → SECOND OVERSPEED EXPOSURE: 2×20m assisted/downhill (very slight grade <2%, or light tow) @97%+ turnover — same protocol as Week 17, repeated for a real second exposure rather than a one-off."},
+    {day:"Thu",type:"Drill",detail:"Mobility → Mach drills (A-skip, B-skip, Power Skip) 3×20m each → FLYING SPRINTS: 30m build-up → 30m FLY ×3."},
+    {day:"Fri",type:"Rest",detail:"Full rest. Two intense sessions this week — protect recovery."},
+    {day:"Sat",type:"Track",detail:"Mobility → 3×60m @93% — relaxed, technical, chasing the same turnover the overspeed work taught on Wednesday."},
+    {day:"Sun",type:"Rest",detail:"Full rest. Weigh-in."}
+  ]},
+  {phase:"MaxV+Race",focus:"Speed-endurance work specifically targets holding top velocity through the back half of the 100m (60–100m) — where a stalled time most often actually lives. Flying sprints and reaction work maintained.",deload:false,sessions:[
+    {day:"Mon",type:"Track",detail:"Mobility → Mach drills → FLYING SPRINTS: 30m build-up → 30m FLY ×3."},
+    {day:"Tue",type:"Gym",detail:"Mobility → Hip Thrust 3×3 @75%, Nordic 3×4. Maintenance."},
+    {day:"Wed",type:"Track",detail:"Mobility → BACK-HALF SPEED ENDURANCE: rolling-start 40m FLY beginning at the 60m mark (simulates holding top speed through 60–100m) ×3, full recovery. Directly targets where 100m times are usually lost."},
+    {day:"Thu",type:"Track",detail:"Mobility → REACTION starts ×4 → 2×80m @93%, emphasis on relaxed mechanics through the final 20m rather than straining."},
+    {day:"Fri",type:"Rest",detail:"Full rest."},
+    {day:"Sat",type:"Track",detail:"Mobility → BACK-HALF SPEED ENDURANCE (session 2): rolling 40m FLY from the 60m mark ×3."},
+    {day:"Sun",type:"Rest",detail:"Full rest. Weigh-in."}
+  ]},
+  {phase:"MaxV+Race",focus:"DIAGNOSTIC WEEK — a split-timed 100m (30m/60m/100m splits) to measure exactly where Phase 5's work has moved the needle, and where the remaining gap to high-11s actually lives.",deload:false,sessions:[
+    {day:"Mon",type:"Gym",detail:"Mobility → Light: Hip Thrust 2×3 @70%. Brief — protecting freshness for Tuesday's diagnostic."},
+    {day:"Tue",type:"Track",detail:"DIAGNOSTIC 100m: full warm-up → 1×100m @95%+ with SPLIT TIMES recorded at 30m, 60m, and 100m (two extra phone stopwatches, or a coach calling splits). Compare directly to Week 19's baseline feel and Week 18's final time."},
+    {day:"Wed",type:"Rest",detail:"Full rest — protect the legs after a maximal diagnostic effort."},
+    {day:"Thu",type:"Track",detail:"Mobility → Mach drills → FLYING SPRINTS: 30m build-up → 20m FLY ×3, technical and controlled."},
+    {day:"Fri",type:"Rest",detail:"Full rest."},
+    {day:"Sat",type:"Track",detail:"Mobility → REACTION starts ×6 → 2×60m @92%. Easy, sharp, controlled — begin easing toward the taper."},
+    {day:"Sun",type:"Rest",detail:"Full rest. Review Tuesday's splits — which phase of the race (accel / max-velocity / back-half) improved most since Week 19?"}
+  ]},
+  {phase:"MaxV+Race",focus:"DELOAD — full taper into the final retest. Volume drops sharply, mirroring the taper logic already proven at Weeks 4, 9, 13, and 17–18.",deload:true,sessions:[
+    {day:"Mon",type:"Track",detail:"Mobility → Mach drills only (A-skip, B-skip) 3×20m, easy → 2×30m starts @85%. Nothing maximal."},
+    {day:"Tue",type:"Rest",detail:"Full rest or 20min easy walk. Protect freshness."},
+    {day:"Wed",type:"Gym",detail:"Mobility → Very light activation only: Hip Thrust 2×3 @65%. 15min."},
+    {day:"Thu",type:"Track",detail:"Mobility → REACTION starts ×4 → 2×60m @88% — sharp but clearly sub-maximal."},
+    {day:"Fri",type:"Rest",detail:"Full rest."},
+    {day:"Sat",type:"Mob",detail:"20min mobility. Visualize the final test — start, drive phase, transition to tall posture, relaxed through the fly zone, holding form through the back half."},
+    {day:"Sun",type:"Rest",detail:"Full rest. Sleep priority — the final retest is Tuesday."}
+  ]},
+  {phase:"MaxV+Race",focus:"FINAL RETEST — 60m and 100m under fresh, competition-simulated conditions, with splits again for direct comparison. Full 24-week program assessment closes the block.",deload:false,sessions:[
+    {day:"Mon",type:"Rest",detail:"Full rest. Final preparation only — hydration, sleep, mental rehearsal of the race plan."},
+    {day:"Tue",type:"Track",detail:"FINAL TIMED TEST: full competition-style warm-up (mobility → Mach drills → build-up strides → reaction starts) → TIMED: 60m ×2 (full recovery) → TIMED: 100m ×1 @full effort, with 30m/60m splits recorded again for direct comparison to Week 22."},
+    {day:"Wed",type:"Rest",detail:"Full rest. Recover from the test."},
+    {day:"Thu",type:"Mob",detail:"Light mobility only. Compare today's splits to Week 22 and Week 18 — where did this block actually move the number?"},
+    {day:"Fri",type:"Gym",detail:"Optional light wind-down: Hip Thrust 2×5 @60%, mobility. Not a demand."},
+    {day:"Sat",type:"Rest",detail:"Full 24-week program assessment: 60m/100m across Weeks 12→18→22→24, all 1RMs, body weight, and squat depth vs Week 1."},
+    {day:"Sun",type:"Rest",detail:"Program complete — 24 weeks. Decide next steps: a new block targeting whatever the splits still show, a maintenance phase, or a competition season plan."}
   ]}
 ];
 
@@ -181,7 +235,13 @@ const PHASE_NOTES = [
   "70sec steady-state efforts. Sprint sharpening. Reaction focus. Second week of fly work — top speed should be trending up. Sled off this week (alternating maintenance).",
   "90sec — endurance ceiling. Hardest endurance week. Light sled pull maintenance (Thu). Sprint quality maintained.",
   "Endurance descends, pace rises. Assisted/downhill overspeed work introduced Thu — teaches turnover faster than current unassisted capacity. No sled — protecting peak sprint output. Best 60m times of the program.",
-  "Exit arc — speed converts from endurance base. Nordic held steady (not tapered) to protect hamstrings at peak intensity. No sled — full taper. Final 100m timed — target: high-11s."
+  "Exit arc — speed converts from endurance base. Nordic held steady (not tapered) to protect hamstrings at peak intensity. No sled — full taper. Final 100m timed — target: high-11s.",
+  "Phase 5 begins — high-11s wasn't hit in Week 18. Strength drops to maintenance only. Reaction/block-start work and increased flying-sprint volume take over as the main focus.",
+  "Flying-sprint distance builds (30m fly zone). Second controlled overspeed exposure — a repeated exposure converts better than Phase 4's single session.",
+  "Speed-endurance work now specifically targets holding top velocity through the back half of the 100m (60–100m) via rolling-start flys — the segment where a stalled time most often actually lives.",
+  "Diagnostic week — a split-timed 100m (30m/60m/100m) measures exactly where Phase 5's work has moved the needle before the taper begins.",
+  "Deload — full taper into the final retest, mirroring the taper logic already proven at Weeks 4, 9, 13, and 17–18.",
+  "Final retest — 60m and 100m with splits, directly comparable to Weeks 12, 18, and 22. Full 24-week program assessment."
 ];
 
 const TYPE_LABELS = {Gym:"Gym",Track:"Track",Mob:"Mobility",Drill:"Drills",End:"Endurance",Rest:"Rest"};
