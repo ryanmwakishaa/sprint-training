@@ -290,6 +290,63 @@
   .gloss-note{display:flex;align-items:flex-start;gap:7px;margin-top:11px;padding:9px 11px;background:linear-gradient(135deg,#FCEFC7,var(--chalk) 150%);border-radius:8px;font-size:12px;color:#5A4710;line-height:1.55}
   .gloss-note i{color:#C99A1F;flex-shrink:0;margin-top:1px}
 
+  /* ===== MACH DRILL MINI-ANIMATIONS ===== */
+  .gloss-anim-wrap{display:flex;align-items:center;gap:11px;padding:10px 0 6px;border-top:1px dashed var(--clay-line)}
+  .gloss-anim-wrap:first-child{border-top:none;padding-top:0}
+  .gloss-anim-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em}
+  .mach-fig{width:52px;height:66px;flex-shrink:0;overflow:visible}
+  .mach-fig g{transform-box:view-box}
+
+  /* A-Skip — rhythmic knee drive to hip height, shin stays consistently bent underneath */
+  @keyframes machAThigh{0%{transform:rotate(35deg)}50%{transform:rotate(-95deg)}100%{transform:rotate(35deg)}}
+  @keyframes machAShin{0%{transform:rotate(15deg)}50%{transform:rotate(70deg)}100%{transform:rotate(15deg)}}
+  @keyframes machAArmF{0%{transform:rotate(-25deg)}50%{transform:rotate(35deg)}100%{transform:rotate(-25deg)}}
+  @keyframes machAArmB{0%{transform:rotate(25deg)}50%{transform:rotate(-35deg)}100%{transform:rotate(25deg)}}
+  .mach-a-skip .m-thigh{transform-origin:50px 64px;animation:machAThigh 1s ease-in-out infinite}
+  .mach-a-skip .m-shin{transform-origin:66px 78px;animation:machAShin 1s ease-in-out infinite}
+  .mach-a-skip .m-arm-front{transform-origin:50px 38px;animation:machAArmF 1s ease-in-out infinite}
+  .mach-a-skip .m-arm-back{transform-origin:50px 38px;animation:machAArmB 1s ease-in-out infinite}
+
+  /* B-Skip — same knee drive as A-skip, but the shin then extends forward and paws down */
+  @keyframes machBThigh{0%{transform:rotate(35deg)}45%{transform:rotate(-95deg)}70%{transform:rotate(-60deg)}100%{transform:rotate(35deg)}}
+  @keyframes machBShin{0%{transform:rotate(15deg)}45%{transform:rotate(75deg)}60%{transform:rotate(-10deg)}80%{transform:rotate(40deg)}100%{transform:rotate(15deg)}}
+  .mach-b-skip .m-thigh{transform-origin:50px 64px;animation:machBThigh 1.1s ease-in-out infinite}
+  .mach-b-skip .m-shin{transform-origin:66px 78px;animation:machBShin 1.1s ease-in-out infinite}
+  .mach-b-skip .m-arm-front{transform-origin:50px 38px;animation:machAArmF 1.1s ease-in-out infinite}
+  .mach-b-skip .m-arm-back{transform-origin:50px 38px;animation:machAArmB 1.1s ease-in-out infinite}
+
+  /* C-Skip — rear-leg drive emphasis: the trailing/support leg kicks back into full extension */
+  @keyframes machCThigh{0%{transform:rotate(35deg)}50%{transform:rotate(-85deg)}100%{transform:rotate(35deg)}}
+  @keyframes machCShin{0%{transform:rotate(15deg)}50%{transform:rotate(60deg)}100%{transform:rotate(15deg)}}
+  @keyframes machCSupport{0%{transform:rotate(0deg)}50%{transform:rotate(38deg)}100%{transform:rotate(0deg)}}
+  .mach-c-skip .m-thigh{transform-origin:50px 64px;animation:machCThigh 1.1s ease-in-out infinite}
+  .mach-c-skip .m-shin{transform-origin:66px 78px;animation:machCShin 1.1s ease-in-out infinite}
+  .mach-c-skip .m-leg-support{transform-origin:50px 64px;animation:machCSupport 1.1s ease-in-out infinite}
+  .mach-c-skip .m-arm-front{transform-origin:50px 38px;animation:machAArmF 1.1s ease-in-out infinite}
+  .mach-c-skip .m-arm-back{transform-origin:50px 38px;animation:machAArmB 1.1s ease-in-out infinite}
+
+  /* Power Skip — maximum height: whole body hops plus an exaggerated knee drive */
+  @keyframes machPowerBody{0%{transform:translateY(0)}40%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+  @keyframes machPowerThigh{0%{transform:rotate(40deg)}40%{transform:rotate(-110deg)}100%{transform:rotate(40deg)}}
+  .mach-power-skip .m-rig{animation:machPowerBody 1.15s cubic-bezier(.3,0,.2,1) infinite}
+  .mach-power-skip .m-thigh{transform-origin:50px 64px;animation:machPowerThigh 1.15s cubic-bezier(.3,0,.2,1) infinite}
+  .mach-power-skip .m-shin{transform-origin:66px 78px;animation:machAShin 1.15s cubic-bezier(.3,0,.2,1) infinite}
+  .mach-power-skip .m-arm-front{transform-origin:50px 38px;animation:machAArmF 1.15s cubic-bezier(.3,0,.2,1) infinite}
+  .mach-power-skip .m-arm-back{transform-origin:50px 38px;animation:machAArmB 1.15s cubic-bezier(.3,0,.2,1) infinite}
+
+  /* Straight-Leg Bound — stiff legs, minimal knee bend, quick low-amplitude ground contacts */
+  @keyframes machBoundThigh{0%{transform:rotate(25deg)}50%{transform:rotate(-45deg)}100%{transform:rotate(25deg)}}
+  .mach-straight-leg-bound .m-thigh{transform-origin:50px 64px;animation:machBoundThigh .55s ease-in-out infinite}
+  .mach-straight-leg-bound .m-shin{transform-origin:66px 78px;transform:rotate(6deg)}
+  .mach-straight-leg-bound .m-arm-front{transform-origin:50px 38px;animation:machAArmF .55s ease-in-out infinite}
+  .mach-straight-leg-bound .m-arm-back{transform-origin:50px 38px;animation:machAArmB .55s ease-in-out infinite}
+
+  /* High Knee Run — the exact same A-skip pattern, just at running-speed tempo */
+  .mach-high-knee-run .m-thigh{transform-origin:50px 64px;animation:machAThigh .55s ease-in-out infinite}
+  .mach-high-knee-run .m-shin{transform-origin:66px 78px;animation:machAShin .55s ease-in-out infinite}
+  .mach-high-knee-run .m-arm-front{transform-origin:50px 38px;animation:machAArmF .55s ease-in-out infinite}
+  .mach-high-knee-run .m-arm-back{transform-origin:50px 38px;animation:machAArmB .55s ease-in-out infinite}
+
   @media (max-width:420px){
     .metrics{grid-template-columns:repeat(2,1fr)}
     .week-grid{grid-template-columns:repeat(4,1fr)}
@@ -996,12 +1053,12 @@ const GLOSSARY = [
     color:'gold',
     intro:"Mach drills run through the entire program. Each isolates one component of the sprint stride and teaches it in isolation before it gets expressed at full speed.",
     rows:[
-      ['A-Skip','20–30m','Rhythmic knee drive to hip height, arms coordinated, ball-of-foot contact, hip stays high. Common error: knee driven too high, flat-footed contact, arms crossing the midline.'],
-      ['B-Skip','20–30m','A-skip drive, then extend the lower leg forward and strike down — the pawing action of top-speed running. Common error: kicking forward without the initial knee drive.'],
-      ['C-Skip','20–30m','Rear-leg drive emphasis — the push-off leg extends fully before the next stride, like an exaggerated running stride. Common error: not completing full triple extension at push-off.'],
-      ['Power Skip','20m','Maximum height per skip — explosive knee drive, jump off the standing leg, land softly on the ball of the foot. Common error: collapsing the ankle on landing.'],
-      ['Straight-Leg Bound','20m','Stiff straight legs, forward lean, ball-of-foot contact only. Rapid, elastic ground contact for ankle stiffness. Common error: bending the knees defeats the purpose.'],
-      ['High Knee Run','40m','Continuous A-skip rhythm at running speed — full knee drive, dorsiflexed foot, fast contact. Common error: technique breaking down as speed increases — slow down before mechanics fail.'],
+      ['A-Skip','20–30m','Rhythmic knee drive to hip height, arms coordinated, ball-of-foot contact, hip stays high. Common error: knee driven too high, flat-footed contact, arms crossing the midline.','a-skip'],
+      ['B-Skip','20–30m','A-skip drive, then extend the lower leg forward and strike down — the pawing action of top-speed running. Common error: kicking forward without the initial knee drive.','b-skip'],
+      ['C-Skip','20–30m','Rear-leg drive emphasis — the push-off leg extends fully before the next stride, like an exaggerated running stride. Common error: not completing full triple extension at push-off.','c-skip'],
+      ['Power Skip','20m','Maximum height per skip — explosive knee drive, jump off the standing leg, land softly on the ball of the foot. Common error: collapsing the ankle on landing.','power-skip'],
+      ['Straight-Leg Bound','20m','Stiff straight legs, forward lean, ball-of-foot contact only. Rapid, elastic ground contact for ankle stiffness. Common error: bending the knees defeats the purpose.','straight-leg-bound'],
+      ['High Knee Run','40m','Continuous A-skip rhythm at running speed — full knee drive, dorsiflexed foot, fast contact. Common error: technique breaking down as speed increases — slow down before mechanics fail.','high-knee-run'],
       ['Arm Drive Drill (walking)','20m','Walking pace, focus only on arms — elbow drives back past the hip, hand forward to cheek height. Common error: crossing the midline, tensing shoulders and fists.']
     ],
     note:null
@@ -1074,6 +1131,26 @@ const GLOSSARY = [
   }
 ];
 
+function machAnimSVG(type){
+  return `<svg class="mach-fig mach-${type}" viewBox="0 0 100 130" aria-hidden="true">
+    <line x1="4" y1="122" x2="96" y2="122" stroke="var(--clay-line)" stroke-width="2"/>
+    <g class="m-rig">
+      <circle class="m-head" cx="50" cy="22" r="7" fill="var(--ink)"/>
+      <line x1="50" y1="29" x2="50" y2="64" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+      <g class="m-arm-back"><line x1="50" y1="38" x2="37" y2="52" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round"/></g>
+      <g class="m-arm-front"><line x1="50" y1="38" x2="63" y2="52" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round"/></g>
+      <g class="m-leg-support">
+        <line x1="50" y1="64" x2="45" y2="93" stroke="var(--track)" stroke-width="4.5" stroke-linecap="round"/>
+        <line x1="45" y1="93" x2="47" y2="118" stroke="var(--track)" stroke-width="4.5" stroke-linecap="round"/>
+      </g>
+      <g class="m-thigh">
+        <line x1="50" y1="64" x2="66" y2="78" stroke="var(--track-dark)" stroke-width="4.5" stroke-linecap="round"/>
+        <g class="m-shin"><line x1="66" y1="78" x2="61" y2="108" stroke="var(--track-dark)" stroke-width="4.5" stroke-linecap="round"/></g>
+      </g>
+    </g>
+  </svg>`;
+}
+
 function buildGlossary(){
   const el=document.getElementById('glossary');
   el.innerHTML=GLOSSARY.map(g=>`
@@ -1087,7 +1164,7 @@ function buildGlossary(){
       <div class="gloss-body" id="gbody-${g.id}">
         <p class="gloss-intro">${g.intro}</p>
         <div class="gloss-table">
-          ${g.rows.map(r=>`<div class="gloss-row"><span class="gloss-ex">${r[0]}</span><span class="gloss-sets">${r[1]}</span><span class="gloss-cue">${r[2]||''}</span></div>`).join('')}
+          ${g.rows.map(r=>`${r[3]?`<div class="gloss-anim-wrap">${machAnimSVG(r[3])}<span class="gloss-anim-label">${r[0]}</span></div>`:''}<div class="gloss-row"><span class="gloss-ex">${r[0]}</span><span class="gloss-sets">${r[1]}</span><span class="gloss-cue">${r[2]||''}</span></div>`).join('')}
         </div>
         ${g.note?`<p class="gloss-note"><i class="ti ti-bulb"></i> ${g.note}</p>`:''}
       </div>
