@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#C1432B">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-<title>Sprint Tracker — 18-Week Program</title>
+<title>Sprint Tracker — 24-Week Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
@@ -191,12 +191,13 @@
   .bar-str{background:#FCE0D9;color:var(--track-dark)}
   .bar-pow{background:#FCEFC7;color:#8A6D14}
   .bar-spe{background:#D6E8F0;color:#205C76}
+  .bar-race{background:#CFEBD8;color:#286B47}
   .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
   .dot-done{background:var(--sage);box-shadow:0 0 0 2px #DCEBDA}
   .dot-empty{background:var(--clay-line)}
 
   /* ===== STRENGTH TABLE ===== */
-  .strength-grid{display:grid;grid-template-columns:108px repeat(4,1fr);gap:4px;font-size:12px}
+  .strength-grid{display:grid;grid-template-columns:108px repeat(5,1fr);gap:4px;font-size:11px}
   .strength-grid .hdr{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--ink-faint);text-align:center;padding:5px 0;text-transform:uppercase}
   .strength-grid .lbl{font-weight:700;padding:6px 0;border-bottom:1px dashed var(--clay-line);font-size:12px}
   .strength-grid .val{font-family:'JetBrains Mono',monospace;color:var(--ink-soft);text-align:center;padding:6px 0;border-bottom:1px dashed var(--clay-line);font-size:10.5px}
@@ -360,7 +361,7 @@
 
 <div class="app-header">
   <div class="brand-mark">
-    <div class="lane-num" onclick="secretTap()" style="cursor:pointer">18</div>
+    <div class="lane-num" onclick="secretTap()" style="cursor:pointer">24</div>
     <div>
       <p class="brand-title">Sprint Tracker</p>
       <p class="brand-sub">Princess · 13.5s → high 11s</p>
@@ -383,7 +384,7 @@
 <!-- TAB 0: SESSIONS -->
 <div id="tab0">
   <div class="metrics">
-    <div class="metric"><div class="metric-label">Week</div><div class="metric-val" id="m-week">1 / 18</div></div>
+    <div class="metric"><div class="metric-label">Week</div><div class="metric-val" id="m-week">1 / 24</div></div>
     <div class="metric"><div class="metric-label">Phase</div><div class="metric-val" id="m-phase" style="font-size:13px;padding-top:3px">Movement</div></div>
     <div class="metric"><div class="metric-label">Sessions done</div><div class="metric-val" id="m-done">0</div></div>
     <div class="metric"><div class="metric-label">Feel avg</div><div class="metric-val" id="m-feel">—</div></div>
@@ -450,7 +451,7 @@
 <!-- TAB 2: PROGRAM -->
 <div id="tab2" style="display:none">
   <div class="card">
-    <p class="card-title"><i class="ti ti-map"></i> 18-week overview</p>
+    <p class="card-title"><i class="ti ti-map"></i> 24-week overview</p>
     <div id="timeline"></div>
   </div>
   <div class="card">
@@ -478,7 +479,7 @@
 
   <div class="chat-messages" id="chatMessages">
     <div class="chat-bubble assistant">
-      <div class="bubble-content">Hey Princess! I'm your sprint coaching assistant. I know the full 18-week program and your profile — ask me anything about sessions, exercises, technique, or how training is going.</div>
+      <div class="bubble-content">Hey Princess! I'm your sprint coaching assistant. I know the full 24-week program and your profile — ask me anything about sessions, exercises, technique, or how training is going.</div>
       <div class="bubble-time">Coach AI · powered by Groq</div>
     </div>
   </div>
@@ -707,7 +708,7 @@ function buildGrid(){
     el.onclick=()=>{ state.currentWeek=i; persist(); refresh(); };
     g.appendChild(el);
   });
-  document.getElementById('m-week').textContent=`${state.currentWeek+1} / 18`;
+  document.getElementById('m-week').textContent=`${state.currentWeek+1} / ${WEEKS.length}`;
   document.getElementById('m-phase').textContent=WEEKS[state.currentWeek].phase;
   document.getElementById('m-done').textContent=totalDone;
   const feels=Object.values(state.weekLogs).filter(l=>l&&l.feel).map(l=>l.feel);
@@ -939,7 +940,7 @@ function buildProgress(){
       return state.sessions[sk(i,origIdx)]==='done';
     }).length;
     const pct=nonRest.length?Math.round(done/nonRest.length*100):100;
-    const barCls=i<4?'bar-mov':i<9?'bar-str':i<13?'bar-pow':'bar-spe';
+    const barCls=i<4?'bar-mov':i<9?'bar-str':i<13?'bar-pow':i<18?'bar-spe':'bar-race';
     bars.innerHTML+=`<div class="progress-row">
       <span class="progress-wk">Wk ${i+1}${wk.deload?' ⚡':''}</span>
       <div class="progress-bar-wrap"><div class="progress-bar ${barCls}" style="width:${Math.max(pct,2)}%">${pct>15?pct+'%':''}</div></div>
@@ -950,7 +951,7 @@ function buildProgress(){
   const fh=document.getElementById('feelHistory');
   const feelLabels=['','Tired','Okay','Good','Great','Peak'];
   const entries=[];
-  for(let i=0;i<18;i++){
+  for(let i=0;i<WEEKS.length;i++){
     const log=state.weekLogs[i]||{};
     if(log.feel||log.notes) entries.push({i,log});
   }
@@ -1050,7 +1051,7 @@ const GLOSSARY = [
   {
     id:'mach',
     name:'Complete Mach Drill Reference',
-    tag:'Every drill & track session · All 18 weeks',
+    tag:'Every drill & track session · All 24 weeks',
     color:'gold',
     intro:"Mach drills run through the entire program. Each isolates one component of the sprint stride and teaches it in isolation before it gets expressed at full speed.",
     rows:[
@@ -1129,6 +1130,32 @@ const GLOSSARY = [
       ['Week 18','2 × 40sec → 2 × 20sec @92–96%','Endurance exit — sharp, near-maximal efforts as the arc closes into final race prep.']
     ],
     note:"Walk (don't jog) between reps for proper recovery. Going out too hard on the first rep is the classic beginner endurance mistake — the goal is consistent pace, not a fast start."
+  },
+  {
+    id:'flyzones',
+    name:'Flying Sprint Zones',
+    tag:'Max-Velocity Development · Weeks 19–24',
+    color:'red',
+    intro:"The most direct way to develop raw top-speed — not fatigue management, not endurance, but the ability to move fast in the first place. Every flying sprint is built from three zones, and a rolling-start variant targets specifically the back half of the race, which is the most common place a 100m time actually stalls.",
+    rows:[
+      ['Build-up Zone','20–30m','Accelerate progressively — never sprint all-out from a standstill here. The goal is to arrive at the fly zone already at (or very near) full speed, without having strained to get there.'],
+      ['Fly Zone','20–30m','The actual max-velocity effort. Cues: run tall — head, shoulders, and hips stacked with minimal forward lean; strike the ground under the hips, not out in front; keep ground contact short and quick; relax the jaw, hands, and shoulders.'],
+      ['Deceleration Zone','15–20m','Let the sprint shut down naturally over this distance — never stop abruptly. Protects the hamstrings and lets the nervous system come back down gradually.'],
+      ['Rolling Fly — back-half variant','40m from the 60m mark','Same build-up-then-fly structure, but the fly zone begins around the point (~60m) where 100m times are typically lost to fatigue rather than a lack of raw speed. Directly trains holding mechanics through the back half of the race.']
+    ],
+    note:"Full recovery between reps (4–5min) is non-negotiable — fatigue is the enemy of technical max-velocity work; a tired fly rep just grooves in bad habits at high speed. Two classic verbal cues worth using during reps: 'run tall' for posture, and Carl Lewis's famous arm cue — 'elbow to the sky, thumb to the eye.'"
+  },
+  {
+    id:'reactionstarts',
+    name:'Reaction & Block-Start Work',
+    tag:'Race-Start Speed · Weeks 19–24',
+    color:'blue',
+    intro:"New to the program in Phase 5 — dedicated practice reacting to a start signal, rather than always self-initiating a 'ready, set, go' on one's own timing. Reaction time itself is only trainable by a small margin (roughly 10–15 milliseconds with repeated practice), so the real value here is a fast, confident, repeatable start under real signal pressure — not chasing an unrealistic reaction-time gain.",
+    rows:[
+      ['Signal-Reaction Starts','4–6 reps','A partner or coach gives an unpredictable signal (whistle, clap, \"go\") while the athlete holds a set position — 3-point stance, or blocks if available. Focus on reacting cleanly, not anticipating the signal — jumping the gun defeats the entire purpose of the drill.'],
+      ['Block Starts (or 3-point equivalent)','4–6 reps','If starting blocks aren\'t available, a 3-point stance works as the substitute. Front foot roughly 1.5–2 shoe-lengths from the line, rear foot 1–1.5 shoe-lengths further back. First few steps stay low and driving — resist the urge to stand up early.']
+    ],
+    note:"Keep this drill fresh — it's a skill/speed quality, not a conditioning one. A handful of quality reps with full recovery beats a large volume of tired, sloppy starts."
   }
 ];
 
@@ -1184,7 +1211,8 @@ function buildProgram(){
     {name:'Phase 1 — Movement foundation',range:[0,3],cls:'bar-mov'},
     {name:'Phase 2 — Strength build',range:[4,8],cls:'bar-str'},
     {name:'Phase 3 — Power expression',range:[9,12],cls:'bar-pow'},
-    {name:'Phase 4 — Speed + endurance',range:[13,17],cls:'bar-spe'}
+    {name:'Phase 4 — Speed + endurance',range:[13,17],cls:'bar-spe'},
+    {name:'Phase 5 — Max velocity & race conversion',range:[18,23],cls:'bar-race'}
   ];
   const tl=document.getElementById('timeline');
   tl.innerHTML=phases.map(p=>`
@@ -1199,16 +1227,16 @@ function buildProgram(){
 
   const st=document.getElementById('strengthTable');
   const rows=[
-    ['Hip Thrust','3×8 @60%','5×5 @70–78%','5×3 @80–84%','3×3 @82–87%'],
-    ['Box Squat','4×8 HIGH BOX','4×5 @68–76%','4×4 @80–84%','3×3 @82–84%'],
-    ['Trap Bar DL','—','4×5 @65–75%','4×4 @78–83%','3×4 @80–82%'],
-    ['Nordic Curl','3×6','3×5–6','4×5','2×4–5'],
-    ['Calf Raise','BW','3×12','3×12','3×10'],
-    ['Bench Press','3×10 @60%','3×8 @65–72%','4×5 @75–80%','3×5 @78–82%']
+    ['Hip Thrust','3×8 @60%','5×5 @70–78%','5×3 @80–84%','3×3 @82–87%','2–3×3–5 @70–82%'],
+    ['Box Squat','4×8 HIGH BOX','4×5 @68–76%','4×4 @80–84%','3×3 @82–84%','—'],
+    ['Trap Bar DL','—','4×5 @65–75%','4×4 @78–83%','3×4 @80–82%','3–4×4–5 @75–78%'],
+    ['Nordic Curl','3×6','3×5–6','4×5','2×4–5','3×4–5 (held steady)'],
+    ['Calf Raise','BW','3×12','3×12','3×10','—'],
+    ['Bench Press','3×10 @60%','3×8 @65–72%','4×5 @75–80%','3×5 @78–82%','3×6 (maintenance)']
   ];
   st.innerHTML=`<div class="strength-grid">
     <span class="hdr"></span>
-    <span class="hdr">Wks 1–4</span><span class="hdr">Wks 5–9</span><span class="hdr">Wks 10–13</span><span class="hdr">Wks 14–18</span>
+    <span class="hdr">Wks 1–4</span><span class="hdr">Wks 5–9</span><span class="hdr">Wks 10–13</span><span class="hdr">Wks 14–18</span><span class="hdr">Wks 19–24</span>
     ${rows.map(r=>`<span class="lbl">${r[0]}</span>${r.slice(1).map(v=>`<span class="val">${v}</span>`).join('')}`).join('')}
   </div>`;
 
@@ -1235,6 +1263,33 @@ const ATHLETE_NOTE = "Long femurs and restricted ankle dorsiflexion mean squat d
 // Pattern-matched static breakdown library — keyed by detection rules against session detail text
 const BREAKDOWN_RULES = [
   {
+    test: s => /FLY/i.test(s.detail),
+    title: "Flying sprint (max velocity)",
+    what: "A sprint with a build-up run (typically 20–30m) before hitting maximum speed for a short measured distance — the build-up removes the acceleration phase so the body trains pure top-end mechanics in isolation.",
+    why: "Max velocity capability is one of the strongest predictors of 100m performance, and it's a skill that needs direct, repeated exposure to convert into race-day speed — a program that's mostly built acceleration and strength can leave this specific quality undertrained.",
+    how: ["Full recovery between reps (6–8min minimum) — max velocity work is a neural quality, not a conditioning one; fatigue defeats the purpose", "Cue 'Up, Scissor, Bounce, Strike' at the top of the knee drive: tall hips, a quick scissoring action, then an active pawing strike back under the hips", "Keep the face, jaw, and hands relaxed — tension there bleeds directly into leg speed", "Land with a stiff ankle directly under the center of mass, not reaching out in front"],
+    watch: ["Reaching or overstriding as fatigue sets in — cue 'step down, not reach' if this appears", "Tension creeping into the shoulders or face on later reps — a sign recovery wasn't full enough"],
+    note: ATHLETE_NOTE
+  },
+  {
+    test: s => /REACTION START|from blocks/i.test(s.detail),
+    title: "Reaction / block starts",
+    what: "Very short sprints (often 10m or less) focused purely on the first movement out of the blocks — reaction to the signal and the initial low drive, not on reaching top speed.",
+    why: "The first phase of a 100m is frequently an overlooked limiter — strength and top-end speed can both be excellent while a slow or high first step still costs real time before the rest of the race even begins.",
+    how: ["Full recovery between reps — this is a reaction-speed and power quality, not a conditioning one", "Drive low and long on the first few steps rather than popping up — an abrupt rise to upright wastes the drive phase's momentum", "Push the ground back, not down — horizontal force is what actually accelerates the body forward"],
+    watch: ["Standing up too early — a very common pattern that costs acceleration distance", "Anticipating the start signal rather than reacting to it — this is a habit, not a talent, and it's trainable"],
+    note: ATHLETE_NOTE
+  },
+  {
+    test: s => /SPLIT-TIMED/i.test(s.detail),
+    title: "Split-timed testing",
+    what: "A full-effort 100m with intermediate times recorded at 30m and 60m as well as the finish, rather than just one final number.",
+    why: "A single 100m time says the result changed (or didn't) — it doesn't say why. Splits reveal whether the limiter is the start/acceleration, the max-velocity phase, or holding form through the finish, which is the difference between guessing at the next block of training and actually targeting it.",
+    how: ["Use a second timer/phone for the 30m and 60m marks, started at the same gun/signal as the main watch", "Warm up fully — a cold split-timed test gives misleading numbers", "Compare the splits to earlier timed sessions where distances match (a Week 8 30m time vs. this 30m split, for example), not just to the overall 100m number"],
+    watch: ["Reading too much into a single test — one run's splits are a data point, not a verdict", "A big gap between the 60m split and the finish usually points at the speed-endurance/relaxation quality (holding form) rather than raw top speed"],
+    note: ATHLETE_NOTE
+  },
+  {
     test: s => /1RM TEST/i.test(s.detail),
     title: "1RM testing",
     what: "A maximal-effort strength test on a key lift to find the current one-rep max. This recalibrates every percentage-based load in the next phase.",
@@ -1259,6 +1314,24 @@ const BREAKDOWN_RULES = [
     why: "Timed runs validate whether the strength and mechanics work is translating into actual speed. They also give honest data for adjusting the next phase of the program.",
     how: ["Full warm-up including mobility, drills, and progressive build-up sprints before the timed effort", "Treat the first attempt as the real one — fatigue accumulates fast on max-effort sprints", "Use a stopwatch or phone timer consistently so results are comparable week to week"],
     watch: ["Over-trying — tension in the face, shoulders, or hands usually slows sprinters down, not speeds them up", "Comparing this number harshly against elite benchmarks — track progress against her own baseline"],
+    note: ATHLETE_NOTE
+  },
+  {
+    test: s => /FLYING SPRINT|ROLLING.{0,12}FLY|FLY ZONE/i.test(s.detail),
+    title: "Flying sprint / max-velocity zone work",
+    what: "A three-zone sprint: a build-up to reach full speed without straining, a 'fly' zone where the real maximum-velocity effort happens, and a deceleration zone to shut down safely. A rolling-start variant begins the fly zone partway into the run (e.g. from the 60m mark) to target the back half of the race specifically.",
+    why: "This is the single most direct way to develop raw top-speed rather than just fatigue tolerance — many beginner-to-intermediate sprint programs under-expose athletes to genuine top-speed-specific work, which is often exactly where a stalled 100m time comes from.",
+    how: ["Accelerate progressively through the build-up — arrive at the fly zone already near full speed, not straining to get there", "In the fly zone: run tall, strike under the hips, relax the jaw/hands/shoulders", "Let the sprint decelerate naturally afterward — never stop abruptly", "Full recovery (4–5min) between reps — fatigue ruins the technical value of this work"],
+    watch: ["Straining to reach the fly zone instead of arriving there relaxed — defeats the entire purpose", "Fatigue creeping in on the final rep of a session — cut the session short rather than grinding through a sloppy rep"],
+    note: ATHLETE_NOTE
+  },
+  {
+    test: s => /REACTION|BLOCK-START/i.test(s.detail),
+    title: "Reaction / block-start work",
+    what: "Practicing the actual race start — reacting to an unpredictable signal from a set position, rather than always self-initiating.",
+    why: "Reaction time itself only improves by roughly 10–15 milliseconds with practice — the real value is building a fast, confident, repeatable start under real signal pressure, which self-paced starts never train.",
+    how: ["Hold the set position steady — no anticipatory movement before the signal", "React to the signal, don't try to predict it — jumping the gun defeats the drill", "Stay low and driving through the first few steps — resist standing up early"],
+    watch: ["Anticipating or jumping the signal instead of reacting to it", "Standing up too early out of the start — a very common pattern under pressure"],
     note: ATHLETE_NOTE
   },
   {
@@ -1454,23 +1527,24 @@ function buildAppContext(){
   for(let i=Math.max(0,w-3);i<=w;i++){const l=state.weekLogs[i]||{};if(l.feel)recentFeels.push(`Week ${i+1}: ${feelLabels[l.feel]}${l.notes?' ("'+l.notes.substring(0,60)+'")':''}`);}
   const recentTimes=(state.times||[]).slice(-5).map(t=>`${t.ev}: ${t.val}s (Week ${t.week})`);
   const thisWeekFull=wk.sessions.map((s,d)=>`  ${s.day} [${s.type}, ${state.sessions[sk(w,d)]||'pending'}]: ${s.detail}`).join('\n');
-  const adjacentWeeks=[w-1,w+1].filter(i=>i>=0&&i<18).map(i=>`Week ${i+1} (${WEEKS[i].phase}${WEEKS[i].deload?' — deload':''}): ${WEEKS[i].focus}`).join('\n');
+  const adjacentWeeks=[w-1,w+1].filter(i=>i>=0&&i<WEEKS.length).map(i=>`Week ${i+1} (${WEEKS[i].phase}${WEEKS[i].deload?' — deload':''}): ${WEEKS[i].focus}`).join('\n');
   const phaseOverview=[
     "Phase 1 — Movement foundation (Wks 1–4): mobility, band work, wall drills, no running.",
     "Phase 2 — Strength build (Wks 5–9): heavy compound lifts, sled introduced, first sprints, ends in 1RM testing.",
     "Phase 3 — Power expression (Wks 10–13): plyometrics, first timed 60m/100m, sled push+pull contrast work, ends in deload/reassessment.",
-    "Phase 4 — Speed + endurance (Wks 14–18): steady-state endurance arc rising then descending, dedicated max-velocity fly work + assisted overspeed added to chase a high-11s stretch goal (up from the original low-12s target), sharpest sprint work, program closes."
+    "Phase 4 — Speed + endurance (Wks 14–18): steady-state endurance arc rising then descending, dedicated max-velocity fly work + assisted overspeed added to chase a high-11s stretch goal (up from the original low-12s target), sharpest sprint work, ends in a final timed 100m — the high-11s target was not hit at this point.",
+    "Phase 5 — Max velocity & race conversion (Wks 19–24, added after Phase 4's 100m target wasn't hit): strength shifts to maintenance only, flying-sprint volume increases, reaction/block-start work added, a second controlled overspeed exposure (repeated exposure converts better than a single one-off), speed-endurance work specifically targeting holding top velocity through the back half of the race, a split-timed (30m/60m/100m) diagnostic 100m in Week 22, then a taper into a final retest in Week 24 comparing Week 12 → Week 18 → Week 24."
   ].join('\n');
   const glossaryIndex=GLOSSARY.map(g=>`${g.name} (${g.tag})`).join('; ');
   return `ATHLETE PROFILE: ${ATHLETE_NOTE}
 
-PROGRAM OVERVIEW (4 phases, 18 weeks):
+PROGRAM OVERVIEW (5 phases, 24 weeks):
 ${phaseOverview}
 
 NAMED PROTOCOLS AVAILABLE (glossary — pull specifics from these when relevant, don't just say "do your mobility work"):
 ${glossaryIndex}
 
-CURRENT WEEK: ${w+1} of 18 — ${wk.phase} phase${wk.deload?' (DELOAD WEEK)':''}
+CURRENT WEEK: ${w+1} of ${WEEKS.length} — ${wk.phase} phase${wk.deload?' (DELOAD WEEK)':''}
 WEEK FOCUS: ${wk.focus}
 THIS WEEK'S FULL SESSION PLAN:
 ${thisWeekFull}
@@ -1569,7 +1643,7 @@ function lockCoachView(){
 }
 
 // ===== HIDDEN COACH TAB — revealed only by a secret tap sequence =====
-// Tap the "18" badge in the header 5 times within 2 seconds to reveal the
+// Tap the "24" badge in the header 5 times within 2 seconds to reveal the
 // Coach tab. Once revealed it stays visible on this device across reloads
 // (nothing to redo every day) until you explicitly Hide it again from
 // inside the dashboard, which re-hides the tab and forgets the reveal.
@@ -1675,7 +1749,7 @@ function renderCoachView(){
       if(coachViewState.sessions && coachViewState.sessions[sk(i,d)]==='done') totalDone++;
     });
   });
-  document.getElementById('c-week').textContent = `${w+1} / 18`;
+  document.getElementById('c-week').textContent = `${w+1} / ${WEEKS.length}`;
   document.getElementById('c-phase').textContent = wk.phase;
   document.getElementById('c-done').textContent = `${totalDone}/${totalSessions}`;
   const feels = Object.values(coachViewState.weekLogs||{}).filter(l=>l&&l.feel).map(l=>l.feel);
@@ -1723,7 +1797,7 @@ function renderCoachView(){
   document.getElementById('c-weekProgress').innerHTML = WEEKS.map((wkX,i)=>{
     const done = wkX.sessions.filter((_,d)=>coachViewState.sessions && coachViewState.sessions[sk(i,d)]==='done').length;
     const pct = wkX.sessions.length ? Math.round((done/wkX.sessions.length)*100) : 0;
-    const barCls=i<4?'bar-mov':i<9?'bar-str':i<13?'bar-pow':'bar-spe';
+    const barCls=i<4?'bar-mov':i<9?'bar-str':i<13?'bar-pow':i<18?'bar-spe':'bar-race';
     return `<div class="progress-row">
       <span class="progress-wk">Wk ${i+1}</span>
       <div class="progress-bar-wrap"><div class="progress-bar ${barCls}" style="width:${Math.max(pct,2)}%">${pct>15?pct+'%':''}</div></div>
