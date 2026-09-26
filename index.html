@@ -360,7 +360,7 @@
 
 <div class="app-header">
   <div class="brand-mark">
-    <div class="lane-num">18</div>
+    <div class="lane-num" onclick="secretTap()" style="cursor:pointer">18</div>
     <div>
       <p class="brand-title">Sprint Tracker</p>
       <p class="brand-sub">Princess · 13.5s → high 11s</p>
@@ -377,7 +377,7 @@
   <button class="tab" onclick="switchTab(1,this)"><i class="ti ti-chart-line"></i> Progress</button>
   <button class="tab" onclick="switchTab(2,this)"><i class="ti ti-layout-list"></i> Program</button>
   <button class="tab" onclick="switchTab(3,this)"><i class="ti ti-robot"></i> Coach AI</button>
-  <button class="tab" onclick="switchTab(4,this)"><i class="ti ti-shield-lock"></i> Coach</button>
+  <button class="tab" id="coachTabBtn" onclick="switchTab(4,this)" style="display:none"><i class="ti ti-shield-lock"></i> Coach</button>
 </div>
 
 <!-- TAB 0: SESSIONS -->
@@ -507,6 +507,7 @@
       <span id="coachSyncIndicator" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint)"></span>
       <div style="display:flex;gap:6px">
         <button class="btn btn-sm" onclick="refreshCoachView()"><i class="ti ti-refresh"></i> Refresh</button>
+        <button class="btn btn-sm" onclick="hideCoachTab()"><i class="ti ti-eye-off"></i> Hide tab</button>
         <button class="btn btn-sm btn-danger" onclick="lockCoachView()"><i class="ti ti-lock"></i> Lock</button>
       </div>
     </div>
@@ -1566,6 +1567,44 @@ function lockCoachView(){
   document.getElementById('coachGate').style.display='block';
   document.getElementById('coachDashboard').style.display='none';
 }
+
+// ===== HIDDEN COACH TAB — revealed only by a secret tap sequence =====
+// Tap the "18" badge in the header 5 times within 2 seconds to reveal the
+// Coach tab. Once revealed it stays visible on this device across reloads
+// (nothing to redo every day) until you explicitly Hide it again from
+// inside the dashboard, which re-hides the tab and forgets the reveal.
+let secretTapCount=0, secretTapTimer=null;
+function secretTap(){
+  secretTapCount++;
+  clearTimeout(secretTapTimer);
+  secretTapTimer=setTimeout(()=>{ secretTapCount=0; }, 2000);
+  if(secretTapCount>=5){
+    secretTapCount=0;
+    clearTimeout(secretTapTimer);
+    revealCoachTab();
+  }
+}
+
+function revealCoachTab(){
+  try{ localStorage.setItem('coachTabRevealed','1'); }catch(e){}
+  const btn=document.getElementById('coachTabBtn');
+  if(btn) btn.style.display='';
+}
+
+function hideCoachTab(){
+  try{ localStorage.removeItem('coachTabRevealed'); }catch(e){}
+  const btn=document.getElementById('coachTabBtn');
+  if(btn) btn.style.display='none';
+  lockCoachView();
+  switchTab(0, document.querySelector('.tab'));
+}
+
+try{
+  if(localStorage.getItem('coachTabRevealed')==='1'){
+    const btn=document.getElementById('coachTabBtn');
+    if(btn) btn.style.display='';
+  }
+}catch(e){}
 
 function openCoachTab(){
   if(isCoachUnlocked()){
