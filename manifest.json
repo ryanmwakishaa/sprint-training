@@ -1,7 +1,7 @@
 {
-  "name": "Sprint Tracker — 18 Week Program",
+  "name": "Sprint Tracker — 24 Week Program",
   "short_name": "Sprint Tracker",
-  "description": "18-week sprint development program tracker for athlete and coach",
+  "description": "24-week sprint development program tracker for athlete and coach",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
