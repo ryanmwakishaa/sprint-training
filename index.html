@@ -364,7 +364,7 @@
     <div class="lane-num" onclick="secretTap()" style="cursor:pointer">24</div>
     <div>
       <p class="brand-title">Sprint Tracker</p>
-      <p class="brand-sub">Princess . 13.5s → high 11s</p>
+      <p class="brand-sub">Princess · 13.5s → high 11s</p>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -1381,21 +1381,13 @@ const BREAKDOWN_RULES = [
   },
   {
     test: s => /Hip Thrust|Box Squat|Trap Bar|RDL|Bulgarian|Nordic|Bench|Row|Pull-Up|Calf Raise/i.test(s.detail) && s.type==='Gym',
-    title: "Gym / strength session",
-    what: "A barbell and accessory strength session targeting the specific muscle groups and movement patterns that underpin sprint performance.",
-    why: "Hip thrust, squat, and posterior chain work build the raw horizontal force production capacity that gets expressed on the track. The percentages and rep ranges shift across the program to build strength, then power, then maintain it.",
-    how: ["Always complete the mobility protocol before loading — this protects squat depth and hip mechanics", "Track the actual weights used each week — this is what makes the 1RM percentages meaningful over time", "Box squat height should track the program's progression toward parallel depth"],
-    watch: ["Squat depth being compromised by ankle restriction rather than effort — flag if depth isn't progressing despite consistent mobility work", "Form breaking down on the final set of heavier days — better to leave a rep in reserve than grind through bad technique"],
-    note: ATHLETE_NOTE
+    dynamic: 'gym',
+    title: "Gym / strength session"
   },
   {
     test: s => s.type==='Track' && /sprint|crouch|m\b/i.test(s.detail),
-    title: "Track / sprint session",
-    what: "On-track sprint work at a specified distance and intensity — the direct expression of the strength and mechanics work being built in the gym.",
-    why: "This is where everything else in the program gets tested. Distance and intensity increase progressively through the program as the body's tolerance for true sprint speed develops.",
-    how: ["Full warm-up: mobility, drills, then progressive build-up runs before any maximal effort", "Full recovery between reps at this intensity — quality over volume", "Stay low through early acceleration steps rather than standing up too soon"],
-    watch: ["Standing up too early in the acceleration phase — a very common beginner pattern", "Visible tension in the face, shoulders, or hands — relaxed sprinting is faster sprinting"],
-    note: ATHLETE_NOTE
+    dynamic: 'track',
+    title: "Track / sprint session"
   },
   {
     test: s => s.type==='Mob' || /[Mm]obility/i.test(s.detail),
@@ -1417,11 +1409,128 @@ const BREAKDOWN_RULES = [
   }
 ];
 
+// ===== PER-EXERCISE CUE LIBRARY — makes the "Expand session" breakdown for
+// Gym days reflect the ACTUAL lifts in that session instead of one generic
+// paragraph reused for all ~50 gym days in the program. =====
+const EXERCISE_CUES = {
+  'Weighted Pull-Up': {cue:"Full range, dead-hang start — quality over added weight.", watch:"Kipping or partial-range reps to hit the number."},
+  'Pull-Up': {cue:"Full range, dead-hang start.", watch:"Kipping or partial-range reps."},
+  'Bulgarian Split Squat': {cue:"Front foot does the work — the back foot is just for balance, not pushing.", watch:"Pushing off the back foot instead of loading the front leg."},
+  'Depth Jump': {cue:"Minimal ground contact on landing — think 'hot floor,' not a big absorbing squat.", watch:"Sinking too deep into the landing instead of a quick rebound."},
+  'Broad Jump': {cue:"Full triple extension (hip-knee-ankle) at takeoff, stick the landing.", watch:"Landing off-balance or too heavy on the heels."},
+  'Jump Squat': {cue:"Land soft, reset fully between reps — this is a power exercise, not a conditioning one.", watch:"Rushing between reps instead of resetting."},
+  'Hurdle Hops': {cue:"Quick, reactive ground contact over each hurdle — arms help drive the rhythm.", watch:"Excessive knee bend turning it into squat-jumps instead of a reactive hop."},
+  'Med Ball Rotational Throw': {cue:"Power comes from the hips rotating first, arms follow.", watch:"Throwing purely with the arms/shoulders instead of initiating from the hips."},
+  'Incline DB Press': {cue:"Control the dumbbells through the full range — don't let them drift forward.", watch:"Losing shoulder position as the set gets heavy."},
+  'Incline Bench': {cue:"Same bar-path discipline as flat bench, just a shallower angle.", watch:"Excessive elbow flare straining the shoulder."},
+  'Pendlay Row': {cue:"Dead-stop each rep off the floor — no momentum, strict form.", watch:"Using hip drive/momentum to move the weight instead of the back."},
+  'Cable Row': {cue:"Pull with the back, not just the arms — squeeze the shoulder blades together at the finish.", watch:"Leaning back excessively to move more weight."},
+  'SL RDL': {cue:"Single-leg version — balance and hip control matter as much as the hamstring stretch.", watch:"Rotating the hips open instead of staying square."},
+  'Loaded Calf Raise': {cue:"Full range — a deep stretch at the bottom, a real pause at the top.", watch:"Bouncing through a partial range instead of a controlled full rep."},
+  'Hip Thrust': {cue:"Drive through the heels, squeeze at lockout — the single biggest horizontal-force builder in the program.", watch:"Hyperextending the lower back at the top instead of finishing through the glutes."},
+  'Box Squat': {cue:"Sit back onto the box under control, brief pause, then drive up — box height tracks the program's progression toward parallel depth.", watch:"Losing tension on the box (fully relaxing) instead of a brief controlled pause."},
+  'Trap Bar DL': {cue:"Push the floor away through mid-foot — a squat-pattern deadlift, not a hip-hinge.", watch:"Rounding the upper back under heavier loads."},
+  'Nordic': {cue:"Control the eccentric (lowering) as long as possible before catching yourself — that's where the hamstring protection actually comes from.", watch:"Letting the hips pike/break early instead of staying in a straight line."},
+  'Calf Raise': {cue:"Full range — a deep stretch at the bottom, a real pause at the top.", watch:"Bouncing through a partial range instead of a controlled full rep."},
+  'Bench': {cue:"Feet planted, shoulder blades pulled back and down, consistent bar path.", watch:"Bouncing the bar off the chest instead of a controlled touch."},
+  'Row': {cue:"Pull with the back, not just the arms.", watch:"Using momentum instead of controlled pulling."},
+  'RDL': {cue:"Hinge from the hips, bar stays close to the legs — this is not a squat.", watch:"Rounding the lower back to chase more range."},
+  'Shoulder Press': {cue:"Brace the core, press straight overhead.", watch:"Excessive lower-back arch to get the weight up."},
+  'Dead Bug': {cue:"Lower back stays pinned to the floor the whole time — slow and controlled.", watch:"The lower back lifting off the floor as the limbs extend."}
+};
+
+function matchExercises(detail){
+  const keys = Object.keys(EXERCISE_CUES).sort((a,b)=>b.length-a.length);
+  let consumed = detail;
+  const matched = [];
+  keys.forEach(k=>{
+    if(consumed.includes(k)){
+      matched.push(k);
+      consumed = consumed.split(k).join('');
+    }
+  });
+  return matched.sort((a,b)=>detail.indexOf(a)-detail.indexOf(b));
+}
+
+const GYM_PHASE_WHY = {
+  'Movement': "This early in the program, gym work is about building a safe strength base under the mobility restrictions already flagged — squat depth and hip mechanics come before load.",
+  'Strength': "This is the strength-accumulation phase — heavier compound loading here raises the ceiling everything else in the program gets built on.",
+  'Power': "Strength is already banked from the previous phase; the gym work here shifts toward expressing it explosively (often paired with a plyometric in the same session) rather than chasing more load.",
+  'Speed+End': "Gym work is now secondary to the sprint and endurance sessions — the goal is to hold strength, not chase new numbers, without adding fatigue that bleeds into track work.",
+  'MaxV+Race': "This is maintenance-only. Capacity has shifted almost entirely to sprint-specific work — the gym's only job now is to stop strength leaking away before the final test, not to build anything new."
+};
+
+const TRACK_PHASE_WHY = {
+  'Strength': "One of the program's earliest exposures to real sprint work — the goal is establishing clean mechanics under low fatigue, not chasing a fast time yet.",
+  'Power': "Sprint distance and intensity are climbing toward the program's first official timed benchmarks — this session is direct preparation for that.",
+  'Speed+End': "Sprint quality is being held or sharpened alongside the endurance arc — the emphasis is holding mechanics, not adding more volume.",
+  'MaxV+Race': "This sits inside the block built specifically to close the remaining gap to the high-11s target — every rep here should be about quality and the cues from that block, not just effort."
+};
+
+function buildGymBreakdown(s, w){
+  const phase = WEEKS[w].phase;
+  const deload = WEEKS[w].deload;
+  const matched = matchExercises(s.detail);
+  const why = (GYM_PHASE_WHY[phase] || GYM_PHASE_WHY['Strength']) + (deload ? " This is also a deload week — the load is deliberately lighter than the surrounding weeks." : "");
+  const how = ["Always complete the mobility protocol before loading — this protects squat depth and hip mechanics"];
+  const watch = [];
+  matched.slice(0,4).forEach(name=>{
+    const c = EXERCISE_CUES[name];
+    how.push(`${name}: ${c.cue}`);
+    watch.push(`${name}: ${c.watch}`);
+  });
+  if(!matched.length){
+    how.push("Track the actual weights used each week — this is what makes the 1RM percentages meaningful over time");
+  }
+  if(!watch.length){
+    watch.push("Form breaking down on the final set of heavier days — better to leave a rep in reserve than grind through bad technique");
+  }
+  return {
+    title: `Gym / strength session — ${phase.replace('+End',' + Endurance').replace('+Race',' + Race')} phase${deload?' (deload)':''}`,
+    what: `A barbell and accessory strength session${matched.length?` built around ${matched.slice(0,4).join(', ')}`:''}, targeting the specific muscle groups and movement patterns that underpin sprint performance.`,
+    why,
+    how,
+    watch,
+    note: ATHLETE_NOTE
+  };
+}
+
+function buildTrackBreakdown(s, w){
+  const phase = WEEKS[w].phase;
+  const distances = (s.detail.match(/(\d+)m\b/g) || []).map(x=>parseInt(x));
+  const maxDist = distances.length ? Math.max(...distances) : 0;
+  const why = TRACK_PHASE_WHY[phase] || "On-track sprint work at a specified distance and intensity — the direct expression of the strength and mechanics work being built in the gym.";
+  let how, watch, emphasis;
+  if(maxDist && maxDist<=30){
+    emphasis = "acceleration";
+    how = ["Full warm-up before any maximal effort", "Stay low and driving through the first several steps — resist standing up early", "Full recovery between reps — quality over volume at this intensity"];
+    watch = ["Standing up too early in the acceleration phase — a very common beginner pattern", "Visible tension in the face, shoulders, or hands"];
+  } else if(maxDist && maxDist>=60){
+    emphasis = "top-speed / race-distance";
+    how = ["Full warm-up including build-up strides before any maximal rep", "Run tall once out of the drive phase — minimal forward lean, relaxed shoulders and hands", "Full recovery between reps — this distance at this intensity is demanding"];
+    watch = ["Tensing up chasing a time instead of staying relaxed — relaxed sprinting is faster sprinting", "Mechanics breaking down in the final third of the rep as fatigue sets in"];
+  } else {
+    emphasis = "mixed";
+    how = ["Full warm-up: mobility, drills, then progressive build-up runs before any maximal effort", "Full recovery between reps at this intensity — quality over volume", "Stay low through early acceleration steps rather than standing up too soon"];
+    watch = ["Standing up too early in the acceleration phase — a very common beginner pattern", "Visible tension in the face, shoulders, or hands — relaxed sprinting is faster sprinting"];
+  }
+  return {
+    title: `Track / sprint session — ${emphasis} emphasis`,
+    what: `On-track sprint work${maxDist?` up to ${maxDist}m`:''} at a specified distance and intensity — the direct expression of the strength and mechanics work being built in the gym.`,
+    why,
+    how,
+    watch,
+    note: ATHLETE_NOTE
+  };
+}
+
 function getBreakdown(w,d){
   const key=sk(w,d);
   if(state.customBreakdowns && state.customBreakdowns[key]) return state.customBreakdowns[key];
   const s=WEEKS[w].sessions[d];
   const rule=BREAKDOWN_RULES.find(r=>r.test(s));
+  if(rule && rule.dynamic==='gym') return buildGymBreakdown(s, w);
+  if(rule && rule.dynamic==='track') return buildTrackBreakdown(s, w);
   return rule;
 }
 
