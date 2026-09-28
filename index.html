@@ -1538,8 +1538,7 @@ function renderBreakdown(b){
   return `<h4>What you're doing</h4><p>${b.what}</p>
     <h4>Why it matters</h4><p>${b.why}</p>
     <h4>How to execute it</h4><ul>${b.how.map(h=>`<li>${h}</li>`).join('')}</ul>
-    <h4>Watch for</h4><ul>${b.watch.map(h=>`<li>${h}</li>`).join('')}</ul>
-    <h4>Coach's note</h4><p>${b.note}</p>`;
+    <h4>Watch for</h4><ul>${b.watch.map(h=>`<li>${h}</li>`).join('')}</ul>`;
 }
 
 function toggleExpand(key,w,d){
@@ -1568,8 +1567,6 @@ function editBreakdown(w,d){
     <div class="edit-label">How to execute it (one per line)</div>
     <textarea id="bHow" class="notes-area" style="height:64px">${b.how.join('\n')}</textarea>
     <div class="edit-label">Watch for (one per line)</div>
-    <textarea id="bWatch" class="notes-area" style="height:54px">${b.watch.join('\n')}</textarea>
-    <div class="edit-label">Coach's note</div>
     <textarea id="bNote" class="notes-area" style="height:54px">${b.note}</textarea>
     <div class="btn-row">
       <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
