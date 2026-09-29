@@ -461,6 +461,24 @@
 
 
 
+
+  .spotify-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .spotify-kicker{margin:0 0 3px;font-size:9px;font-weight:800;letter-spacing:.16em;color:#1DB954}
+  .spotify-live{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#1DB954;border:1px solid rgba(29,185,84,.35);border-radius:999px;padding:4px 7px;background:rgba(29,185,84,.07)}
+  .spotify-live span{width:6px;height:6px;border-radius:50%;background:#1DB954;box-shadow:0 0 0 3px rgba(29,185,84,.12);animation:spotifyPulse 1.8s ease-in-out infinite}
+  .spotify-shell{position:relative;margin-top:4px;padding:8px;border-radius:16px;background:linear-gradient(145deg,#111713,#151515);border:1px solid rgba(29,185,84,.18);overflow:hidden}
+  .spotify-shell::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 8% 0%,rgba(29,185,84,.12),transparent 35%);pointer-events:none}
+  .spotify-wave{position:absolute;top:8px;right:14px;display:flex;align-items:center;gap:2px;height:12px;opacity:.45;z-index:1}
+  .spotify-wave i{display:block;width:2px;height:5px;background:#1DB954;border-radius:2px;animation:spotifyWave 1s ease-in-out infinite alternate}
+  .spotify-wave i:nth-child(2n){animation-delay:.15s;height:8px}.spotify-wave i:nth-child(3n){animation-delay:.3s;height:11px}.spotify-wave i:nth-child(4n){animation-delay:.45s;height:6px}
+  .spotify-frame{position:relative;z-index:2}
+  .spotify-footer{display:flex;justify-content:space-between;gap:10px;margin-top:9px;font-size:10px;color:var(--ink-faint);letter-spacing:.03em}
+  .spotify-footer i{color:#1DB954}
+  @keyframes spotifyPulse{50%{opacity:.45;transform:scale(.85)}}
+  @keyframes spotifyWave{from{transform:scaleY(.55)}to{transform:scaleY(1)}}
+  :root[data-theme="dark"] .spotify-shell{background:linear-gradient(145deg,#0B0E0C,#121212);border-color:rgba(29,185,84,.24)}
+  @media (max-width:600px){.spotify-heading{align-items:center}.spotify-live{font-size:8px}.spotify-footer{font-size:9px}}
+
   /* ===== SPOTIFY TRAINING PLAYER ===== */
   .spotify-card{
     position:relative;
