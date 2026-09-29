@@ -95,6 +95,16 @@
   .opts-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
   .opts-btn:active{transform:translate(1px,1px);box-shadow:0 0 0 var(--ink)}
 
+  /* ===== THEME TOGGLE ===== */
+  .theme-toggle{
+    padding:7px 11px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;
+    border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);
+    display:flex;align-items:center;gap:5px;transition:transform .12s,box-shadow .12s;
+    box-shadow:2px 2px 0 var(--ink)
+  }
+  .theme-toggle:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+  .theme-toggle:active{transform:translate(1px,1px);box-shadow:0 0 0 var(--ink)}
+
   /* ===== TABS ===== */
   .tab-bar{display:flex;gap:5px;background:var(--clay);border-radius:10px;padding:5px;margin-bottom:1.5rem;border:1px solid var(--clay-line)}
   .tab{flex:1;padding:9px 4px;border:none;background:transparent;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
