@@ -17,11 +17,34 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="/css/main.css">
 
+<script>
+(function(){
+  const saved=localStorage.getItem('sprintTheme');
+  if(saved==='dark') document.documentElement.setAttribute('data-theme','dark');
+})();
+function toggleTheme(){
+  const root=document.documentElement;
+  const dark=root.getAttribute('data-theme')==='dark';
+  if(dark){root.removeAttribute('data-theme');localStorage.setItem('sprintTheme','light');}
+  else{root.setAttribute('data-theme','dark');localStorage.setItem('sprintTheme','dark');}
+  updateThemeButton();
+}
+function updateThemeButton(){
+  const b=document.getElementById('themeToggle');
+  if(!b)return;
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  b.innerHTML=dark?'<i class="ti ti-sun"></i><span>Light</span>':'<i class="ti ti-moon"></i><span>Dark</span>';
+}
+document.addEventListener('DOMContentLoaded',updateThemeButton);
+</script>
 </head>
 <body>
 <div class="app">
 
 <div class="app-header">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
+  <i class="ti ti-moon"></i><span>Dark</span>
+</button>
   <div class="brand-mark">
     <div class="lane-num" onclick="secretTap()" style="cursor:pointer">24</div>
     <div>
