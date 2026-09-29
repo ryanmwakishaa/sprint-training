@@ -49,7 +49,7 @@ function buildSessions(){
     const bc=status==='done'?'badge-done':status==='skip'?'badge-skip':s.type==='Rest'?'badge-rest':'badge-pending';
     const bl=status==='done'?'Done ✓':status==='skip'?'Skipped':s.type==='Rest'?'Rest':'Upcoming';
     const row=document.createElement('div');
-    row.className='session-row';
+    row.className='session-row session-card';
     row.innerHTML=`
       <span class="day-col">${s.day}</span>
       <span class="detail-col">
@@ -66,6 +66,10 @@ function buildSessions(){
           <button class="sess-btn do-edit" onclick="editSession(${w},${d})" title="Edit session"><i class="ti ti-pencil" style="font-size:12px"></i></button>
         </div>`:''}
       </div>`;
+    row.addEventListener('click', (e)=>{
+      if(e.target.closest('button')) return;
+      row.classList.toggle('is-focused');
+    });
     list.appendChild(row);
   });
 }
