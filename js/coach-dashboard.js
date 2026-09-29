@@ -1,8 +1,8 @@
 // ===== COACH VIEW (PIN-gated, read-only) =====
 // Change this to whatever PIN you want to require for coach access.
-// This is a client-side deterrent, not real security — anyone reading the
-// page source (or opening dev tools) can see it. It's meant to keep a
-// curious athlete out of the coach view on a shared/installed app, not to
+// This is a client-side deterrent, not real security 
+//anyone reading the page source (or opening dev tools) can see it. 
+// It's meant to keep a curious athlete out of the coach view on a shared/installed app, not to
 // stop a determined attacker.
 const COACH_PIN = '2468';
 
