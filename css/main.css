@@ -166,6 +166,76 @@
   .type-End{background:#D6E8F0;color:#205C76}
   .type-Rest{background:var(--clay);color:var(--ink-soft)}
 
+
+  /* ===== INTERACTIVE SESSION CARDS ===== */
+  .session-card{
+    position:relative;
+    border-bottom:1px dashed var(--clay-line);
+    padding:12px 6px;
+    margin:0 -6px;
+    border-radius:10px;
+    transition:background .18s ease,transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+    cursor:pointer;
+  }
+  .session-card:hover{
+    background:var(--clay);
+    transform:translateX(2px);
+  }
+  .session-card.is-focused{
+    background:linear-gradient(90deg,var(--clay),var(--paper));
+    box-shadow:inset 3px 0 0 var(--track),0 5px 14px var(--shadow);
+    transform:translateX(3px);
+  }
+  .session-card.is-focused .session-main{
+    color:var(--ink);
+  }
+  .session-card .day-col{
+    transition:color .18s ease,transform .18s ease;
+  }
+  .session-card:hover .day-col,
+  .session-card.is-focused .day-col{
+    color:var(--track);
+    transform:translateX(1px);
+  }
+  .session-card .type-pill{
+    transition:transform .18s ease;
+  }
+  .session-card:hover .type-pill{
+    transform:translateY(-1px);
+  }
+  .session-card .expand-btn{
+    transition:background .18s ease,border-color .18s ease,transform .18s ease;
+  }
+  .session-card.is-focused .expand-btn{
+    background:var(--go);
+    border-color:var(--go-dark);
+    color:var(--ink);
+  }
+  .session-card .sess-actions{
+    opacity:.72;
+    transform:translateX(3px);
+    transition:opacity .18s ease,transform .18s ease;
+  }
+  .session-card:hover .sess-actions,
+  .session-card.is-focused .sess-actions{
+    opacity:1;
+    transform:translateX(0);
+  }
+  .session-card .badge{
+    transition:transform .18s ease;
+  }
+  .session-card:hover .badge{
+    transform:translateY(-1px);
+  }
+  .session-card.is-focused .badge{
+    transform:scale(1.03);
+  }
+  @media (max-width:600px){
+    .session-card:hover{transform:none}
+    .session-card.is-focused{transform:none}
+    .session-card .sess-actions{opacity:1;transform:none}
+  }
+
   /* ===== SESSION ACTION BUTTONS ===== */
   .sess-actions{display:flex;gap:4px}
   .sess-btn{
