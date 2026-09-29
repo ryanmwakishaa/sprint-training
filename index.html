@@ -81,15 +81,30 @@ document.addEventListener('DOMContentLoaded',updateThemeButton);
     <div id="sessionList"></div>
   </div>
   <div class="card spotify-card">
-    <p class="card-title"><i class="ti ti-brand-spotify"></i> Training music</p>
-    <p class="spotify-intro">Play your training playlist without leaving Sprint Tracker.</p>
-    <iframe
-      class="spotify-frame"
-      src="https://open.spotify.com/embed/playlist/4l5NHmNR8Ve8oJeoXIaW0t?utm_source=generator"
-      title="Spotify training playlist"
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy">
-    </iframe>
+    <div class="spotify-heading">
+      <div>
+        <p class="spotify-kicker"><i class="ti ti-headphones"></i> TRAINING MODE</p>
+        <p class="card-title"><i class="ti ti-brand-spotify"></i> Training music</p>
+      </div>
+      <span class="spotify-live"><span></span> READY</span>
+    </div>
+    <p class="spotify-intro">Lock in with your training playlist while you work through today's session.</p>
+    <div class="spotify-shell">
+      <div class="spotify-wave" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <iframe
+        class="spotify-frame"
+        src="https://open.spotify.com/embed/playlist/4l5NHmNR8Ve8oJeoXIaW0t?utm_source=generator"
+        title="Spotify training playlist"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+      </iframe>
+    </div>
+    <div class="spotify-footer">
+      <span><i class="ti ti-bolt"></i> Stay in the zone</span>
+      <span>Spotify playlist</span>
+    </div>
   </div>
 
   <div class="card">
