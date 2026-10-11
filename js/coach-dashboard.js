@@ -1,38 +1,142 @@
-// ===== COACH VIEW (PIN-gated, read-only) =====
-// Change this to whatever PIN you want to require for coach access.
-// This is a client-side deterrent, not real security 
-//anyone reading the page source (or opening dev tools) can see it. 
-// It's meant to keep a curious athlete out of the coach view on a shared/installed app, not to
-// stop a determined attacker.
-const COACH_PIN = '2468';
-
+// ===== COACH DASHBOARD — AUTHENTICATED ROSTER =====
 let coachViewState = null;
 let coachPollTimer = null;
-
-function isCoachUnlocked(){
-  try{ return localStorage.getItem('coachUnlocked') === 'true'; }catch(e){ return false; }
-}
-
-function tryCoachUnlock(){
-  const input = document.getElementById('coachPinInput');
-  const err = document.getElementById('coachPinError');
-  if(input.value === COACH_PIN){
-    try{ localStorage.setItem('coachUnlocked','true'); }catch(e){}
-    input.value='';
-    err.style.display='none';
-    openCoachDashboard();
-  } else {
-    err.style.display='block';
-    input.value='';
-    input.focus();
-  }
-}
+let selectedCoachAthleteId = null;
+let coachRoster = [];
 
 function lockCoachView(){
-  try{ localStorage.removeItem('coachUnlocked'); }catch(e){}
   stopCoachPolling();
-  document.getElementById('coachGate').style.display='block';
-  document.getElementById('coachDashboard').style.display='none';
+  const d=document.getElementById('coachDashboard');
+  if(d) d.style.display='none';
+}
+function revealCoachTab(){
+  const btn=document.getElementById('coachTabBtn');
+  if(btn && currentUserRole==='coach') btn.style.display='';
+}
+function hideCoachTab(){
+  if(currentUserRole==='coach'){
+    lockCoachView();
+    switchTab(0, document.querySelector('.tab'));
+  }
+}
+function openCoachTab(){
+  if(currentUserRole!=='coach') return;
+  openCoachDashboard();
+}
+async function openCoachDashboard(){
+  if(currentUserRole!=='coach') return;
+  const gate=document.getElementById('coachGate');
+  if(gate) gate.style.display='none';
+  document.getElementById('coachDashboard').style.display='block';
+  await loadCoachRoster();
+  await refreshCoachView();
+  startCoachPolling();
+}
+async function loadCoachRoster(){
+  if(!sb || currentUserRole!=='coach' || !currentUser) return;
+  const status=document.getElementById('coachRosterMessage');
+  try{
+    const {data:links,error}=await sb.from('coach_athletes').select('athlete_id').eq('coach_id',currentUser.id);
+    if(error) throw error;
+    const profiles=await Promise.all((links||[]).map(async link=>{
+      const {data,error}=await sb.from('profiles').select('id,full_name').eq('id',link.athlete_id).single();
+      if(error) throw error;
+      return data;
+    }));
+    coachRoster=profiles;
+    const select=document.getElementById('coachAthleteSelect');
+    if(!select) return;
+    const previous=selectedCoachAthleteId;
+    select.innerHTML='<option value="">Select an athlete…</option>'+profiles.map(p=>
+      '<option value="'+p.id.replace(/"/g,'&quot;')+'">'+(p.full_name||'Athlete').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</option>'
+    ).join('');
+    if(previous && profiles.some(p=>p.id===previous)) select.value=previous;
+    else { selectedCoachAthleteId=null; select.value=''; coachViewState=null; }
+    if(status) status.textContent=profiles.length?'Athletes: '+profiles.length:'No athletes assigned yet. Add an athlete using their sign-up email.';
+  }catch(e){
+    console.error('Could not load coach roster',e);
+    if(status) status.textContent='Could not load roster. Check the Supabase setup and coach role.';
+  }
+}
+async function addCoachAthlete(){
+  if(!sb || currentUserRole!=='coach') return;
+  const input=document.getElementById('coachAthleteEmail');
+  const status=document.getElementById('coachRosterMessage');
+  const email=input.value.trim();
+  if(!email){ if(status) status.textContent='Enter the athlete account email.'; return; }
+  try{
+    const {error}=await sb.rpc('coach_add_athlete_by_email',{athlete_email:email});
+    if(error) throw error;
+    input.value='';
+    if(status) status.textContent='Athlete added to your roster.';
+    await loadCoachRoster();
+  }catch(e){
+    if(status) status.textContent=e.message||'Could not add athlete.';
+  }
+}
+function selectCoachAthlete(){
+  const select=document.getElementById('coachAthleteSelect');
+  selectedCoachAthleteId=select?select.value:null;
+  coachViewState=null;
+  if(!selectedCoachAthleteId){
+    setCoachSyncStatus('loading');
+    document.getElementById('c-week').textContent='—';
+    document.getElementById('c-phase').textContent='Select athlete';
+    document.getElementById('c-done').textContent='—';
+    document.getElementById('c-feel').textContent='—';
+    document.getElementById('c-flags').textContent='';
+    document.getElementById('c-phaseBanner').textContent='Choose an athlete to view their individual programme progress.';
+    document.getElementById('c-sessionList').textContent='';
+    document.getElementById('c-feelTrend').textContent='';
+    document.getElementById('c-timesLog').textContent='';
+    document.getElementById('c-weekProgress').textContent='';
+    return;
+  }
+  refreshCoachView();
+}
+function setCoachSyncStatus(s){
+  const el=document.getElementById('coachSyncIndicator');
+  if(!el) return;
+  const map={
+    loading:['●','var(--go-dark)','Loading…'],
+    live:['●','var(--sage-deep)','Live'],
+    error:['●','var(--track)','Could not load — check connection']
+  };
+  const [dot,color,label]=map[s]||map.loading;
+  el.textContent='';
+  const span=document.createElement('span');
+  span.textContent=dot;
+  span.style.color=color;
+  el.append(span,document.createTextNode(' '+label));
+}
+async function refreshCoachView(){
+  if(currentUserRole!=='coach' || !selectedCoachAthleteId){
+    setCoachSyncStatus('loading');
+    return;
+  }
+  setCoachSyncStatus('loading');
+  try{
+    const remote=await pullAthleteState(selectedCoachAthleteId);
+    if(remote && remote.state && Object.keys(remote.state).length){
+      coachViewState=remote.state;
+      renderCoachView();
+      setCoachSyncStatus('live');
+    }else{
+      coachViewState={currentWeek:0,sessions:{},weekLogs:{},times:[],sessionEdits:{}};
+      renderCoachView();
+      setCoachSyncStatus('live');
+    }
+  }catch(e){
+    console.error('Could not load selected athlete',e);
+    setCoachSyncStatus('error');
+  }
+}
+function startCoachPolling(){
+  stopCoachPolling();
+  coachPollTimer=setInterval(refreshCoachView,20000);
+}
+function stopCoachPolling(){
+  if(coachPollTimer){ clearInterval(coachPollTimer); coachPollTimer=null; }
 }
 
 // ===== HIDDEN COACH TAB — revealed only by a secret tap sequence =====
@@ -197,7 +301,3 @@ function renderCoachView(){
     </div>`;
   }).join('');
 }
-
-// Final init
-refresh();
-initSync();
