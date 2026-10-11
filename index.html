@@ -39,14 +39,29 @@ document.addEventListener('DOMContentLoaded',updateThemeButton);
 </script>
 </head>
 <body>
-<div class="app">
+<div id="authScreen" style="max-width:460px;margin:8vh auto;padding:24px;background:var(--paper,#fff);border:1px solid var(--clay-line,#ddd);border-radius:16px;box-shadow:0 12px 36px rgba(0,0,0,.06)">
+  <p style="font-family:'Archivo Black',sans-serif;font-size:24px;margin:0 0 6px">Sprint Tracker</p>
+  <p style="color:var(--ink-soft,#666);font-size:13px;margin:0 0 20px">Sign in to keep each athlete's programme, week, and results separate.</p>
+  <label for="authName" style="display:block;font-size:12px;margin:10px 0 5px">Name (for new accounts)</label>
+  <input id="authName" autocomplete="name" placeholder="Your name" style="width:100%;box-sizing:border-box">
+  <label for="authEmail" style="display:block;font-size:12px;margin:10px 0 5px">Email</label>
+  <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" style="width:100%;box-sizing:border-box">
+  <label for="authPassword" style="display:block;font-size:12px;margin:10px 0 5px">Password (at least 8 characters)</label>
+  <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password" style="width:100%;box-sizing:border-box">
+  <div style="display:flex;gap:8px;margin-top:16px">
+    <button id="signInBtn" class="btn btn-primary" onclick="handleSignIn()" style="flex:1">Sign in</button>
+    <button id="signUpBtn" class="btn" onclick="handleSignUp()" style="flex:1">Create account</button>
+  </div>
+  <p id="authMessage" role="status" style="font-size:12px;line-height:1.5;margin-top:12px"></p>
+</div>
+<div class="app" style="display:none">
 
 <div class="app-header">
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
   <i class="ti ti-moon"></i><span>Dark</span>
 </button>
   <div class="brand-mark">
-    <div class="lane-num" onclick="secretTap()" style="cursor:pointer">24</div>
+    <div class="lane-num">24</div>
     <div>
       <p class="brand-title">Sprint Tracker</p>
       <p class="brand-sub">Athlete · 13.5s → high 11s</p>
@@ -54,6 +69,8 @@ document.addEventListener('DOMContentLoaded',updateThemeButton);
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <span id="syncIndicator" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);display:flex;align-items:center;gap:4px"></span>
+    <span id="accountLabel" style="font-size:11px;color:var(--ink-soft);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+    <button class="opts-btn" onclick="signOutAccount()" title="Sign out"><i class="ti ti-logout"></i></button>
     <button class="opts-btn" onclick="openSettings()"><i class="ti ti-settings"></i> Options</button>
   </div>
 </div>
@@ -177,18 +194,19 @@ document.addEventListener('DOMContentLoaded',updateThemeButton);
 
 <!-- TAB 4: COACH VIEW (PIN-gated, read-only) -->
 <div id="tab4" style="display:none">
-  <div id="coachGate" class="card" style="text-align:center;padding:2.2rem 1.25rem">
-    <i class="ti ti-lock" style="font-size:32px;color:var(--ink-faint);margin-bottom:10px;display:block"></i>
-    <p style="font-weight:700;margin-bottom:6px">Coach access only</p>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px">Enter the coach PIN to view the dashboard.</p>
-    <div style="display:flex;gap:8px;justify-content:center;max-width:230px;margin:0 auto">
-      <input id="coachPinInput" type="password" inputmode="numeric" placeholder="PIN" style="text-align:center;letter-spacing:4px;width:110px" onkeydown="if(event.key==='Enter')tryCoachUnlock()">
-      <button class="btn btn-primary" onclick="tryCoachUnlock()">Unlock</button>
-    </div>
-    <p id="coachPinError" style="font-size:11.5px;color:var(--track);margin-top:10px;display:none">Wrong PIN — try again.</p>
+  <div id="coachGate" class="card" style="display:none">
+    <p style="font-weight:700;margin-bottom:6px">Coach roster</p>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:12px">Add athletes after they have created their own accounts.</p>
   </div>
 
   <div id="coachDashboard" style="display:none">
+    <div class="card" style="margin-bottom:12px">
+      <p class="card-title"><i class="ti ti-users"></i> Athlete roster</p>
+      <label for="coachAthleteSelect" style="display:block;font-size:12px;margin-bottom:5px">View athlete</label>
+      <select id="coachAthleteSelect" onchange="selectCoachAthlete()" style="width:100%;margin-bottom:10px"><option value="">Select an athlete…</option></select>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="coachAthleteEmail" type="email" placeholder="Athlete account email" style="flex:1;min-width:180px"><button class="btn btn-primary" onclick="addCoachAthlete()">Add athlete</button></div>
+      <p id="coachRosterMessage" role="status" style="font-size:12px;color:var(--ink-soft);margin-top:8px"></p>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <span id="coachSyncIndicator" style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint)"></span>
       <div style="display:flex;gap:6px">
@@ -240,7 +258,9 @@ document.addEventListener('DOMContentLoaded',updateThemeButton);
 <script src="/js/training-features.js"></script>
 <script src="/js/coach-ai.js"></script>
 <script src="/js/coach-dashboard.js"></script>
+<script src="/js/auth.js"></script>
 <script>
+initAuthentication();
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
