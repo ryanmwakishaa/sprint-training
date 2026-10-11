@@ -51,7 +51,7 @@ using (
   user_id = auth.uid()
   or exists (
     select 1 from public.coach_athletes ca
-    where ca.coach_id = auth.uid() and ca.athlete_id = tracker_state.user_id
+    where ca.coach_id = auth.uid() and ca.athlete_id = athlete_tracker_state.user_id
   )
 );
 
