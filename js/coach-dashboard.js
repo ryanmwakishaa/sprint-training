@@ -139,13 +139,28 @@ function stopCoachPolling(){
   if(coachPollTimer){ clearInterval(coachPollTimer); coachPollTimer=null; }
 }
 
+function getCoachProgram(){
+  const program=JSON.parse(JSON.stringify(BASE_WEEKS));
+  Object.entries(coachViewState && coachViewState.sessionEdits || {}).forEach(([key,edit])=>{
+    const match=key.match(/^w(\d+)d(\d+)$/);
+    if(!match) return;
+    const w=Number(match[1]), d=Number(match[2]);
+    if(program[w] && program[w].sessions[d]){
+      if(edit.type) program[w].sessions[d].type=edit.type;
+      if(edit.detail!==undefined) program[w].sessions[d].detail=edit.detail;
+    }
+  });
+  return program;
+}
+
 function renderCoachView(){
   if(!coachViewState) return;
-  const w = coachViewState.currentWeek || 0;
-  const wk = WEEKS[w];
+  const coachWeeks=getCoachProgram();
+  const w = Math.min(Math.max(coachViewState.currentWeek || 0,0), coachWeeks.length-1);
+  const wk = coachWeeks[w];
 
   let totalDone=0, totalSessions=0;
-  WEEKS.forEach((wkX,i)=>{
+  coachWeeks.forEach((wkX,i)=>{
     wkX.sessions.forEach((_,d)=>{
       totalSessions++;
       if(coachViewState.sessions && coachViewState.sessions[sk(i,d)]==='done') totalDone++;
@@ -196,7 +211,7 @@ function renderCoachView(){
     times.map(t=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed var(--clay-line)"><span>${t.ev}</span><span><strong>${t.val}s</strong> · Week ${t.week}</span></div>`).join('')
     : '<p class="c-empty">No times logged yet.</p>';
 
-  document.getElementById('c-weekProgress').innerHTML = WEEKS.map((wkX,i)=>{
+  document.getElementById('c-weekProgress').innerHTML = coachWeeks.map((wkX,i)=>{
     const done = wkX.sessions.filter((_,d)=>coachViewState.sessions && coachViewState.sessions[sk(i,d)]==='done').length;
     const pct = wkX.sessions.length ? Math.round((done/wkX.sessions.length)*100) : 0;
     const barCls=i<4?'bar-mov':i<9?'bar-str':i<13?'bar-pow':i<18?'bar-spe':'bar-race';
