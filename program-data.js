@@ -245,3 +245,9 @@ const PHASE_NOTES = [
 ];
 
 const TYPE_LABELS = {Gym:"Gym",Track:"Track",Mob:"Mobility",Drill:"Drills",End:"Endurance",Rest:"Rest"};
+
+// Keep an immutable baseline so switching accounts never carries another athlete's session edits.
+const BASE_WEEKS = JSON.parse(JSON.stringify(WEEKS));
+function resetProgramToBase(){
+  WEEKS.splice(0, WEEKS.length, ...JSON.parse(JSON.stringify(BASE_WEEKS)));
+}
