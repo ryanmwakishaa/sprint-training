@@ -17,7 +17,7 @@ create table if not exists public.coach_athletes (
   constraint coach_cannot_assign_self check (coach_id <> athlete_id)
 );
 
-create table if not exists public.tracker_state (
+create table if not exists public.athlete_tracker_state (
   user_id uuid primary key references auth.users(id) on delete cascade,
   state jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
@@ -25,7 +25,7 @@ create table if not exists public.tracker_state (
 
 alter table public.profiles enable row level security;
 alter table public.coach_athletes enable row level security;
-alter table public.tracker_state enable row level security;
+alter table public.athlete_tracker_state enable row level security;
 
 -- Profiles are created by the trusted auth trigger; users cannot change their own role.
 drop policy if exists "profiles_select_self_or_assigned_coach" on public.profiles;
@@ -44,9 +44,9 @@ create policy "coach_athletes_select_participants"
 on public.coach_athletes for select to authenticated
 using (coach_id = auth.uid() or athlete_id = auth.uid());
 
-drop policy if exists "tracker_state_select_owner_or_assigned_coach" on public.tracker_state;
-create policy "tracker_state_select_owner_or_assigned_coach"
-on public.tracker_state for select to authenticated
+drop policy if exists "athlete_tracker_state_select_owner_or_assigned_coach" on public.athlete_tracker_state;
+create policy "athlete_tracker_state_select_owner_or_assigned_coach"
+on public.athlete_tracker_state for select to authenticated
 using (
   user_id = auth.uid()
   or exists (
@@ -55,20 +55,20 @@ using (
   )
 );
 
-drop policy if exists "tracker_state_insert_owner" on public.tracker_state;
-create policy "tracker_state_insert_owner"
-on public.tracker_state for insert to authenticated
+drop policy if exists "athlete_tracker_state_insert_owner" on public.athlete_tracker_state;
+create policy "athlete_tracker_state_insert_owner"
+on public.athlete_tracker_state for insert to authenticated
 with check (user_id = auth.uid());
 
-drop policy if exists "tracker_state_update_owner" on public.tracker_state;
-create policy "tracker_state_update_owner"
-on public.tracker_state for update to authenticated
+drop policy if exists "athlete_tracker_state_update_owner" on public.athlete_tracker_state;
+create policy "athlete_tracker_state_update_owner"
+on public.athlete_tracker_state for update to authenticated
 using (user_id = auth.uid())
 with check (user_id = auth.uid());
 
-drop policy if exists "tracker_state_delete_owner" on public.tracker_state;
-create policy "tracker_state_delete_owner"
-on public.tracker_state for delete to authenticated
+drop policy if exists "athlete_tracker_state_delete_owner" on public.athlete_tracker_state;
+create policy "athlete_tracker_state_delete_owner"
+on public.athlete_tracker_state for delete to authenticated
 using (user_id = auth.uid());
 
 -- New accounts are always athletes. Role promotion is deliberately not exposed to the browser.
@@ -132,7 +132,7 @@ grant execute on function public.coach_add_athlete_by_email(text) to authenticat
 
 grant select on public.profiles to authenticated;
 grant select on public.coach_athletes to authenticated;
-grant select, insert, update, delete on public.tracker_state to authenticated;
+grant select, insert, update, delete on public.athlete_tracker_state to authenticated;
 
 -- SETUP AFTER RUNNING THIS FILE:
 -- 1) Sign up in the app using your own email.
