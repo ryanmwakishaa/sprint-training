@@ -22,6 +22,8 @@ function loadStateForUser(userId){
     }
   }catch(e){ console.warn('Could not load this account\'s local tracker state', e); }
   if(!state.lastModified) state.lastModified = 0;
+  if(typeof resetProgramToBase === 'function') resetProgramToBase();
+  if(typeof applySessionEdits === 'function') applySessionEdits();
 }
 
 function persist(){
