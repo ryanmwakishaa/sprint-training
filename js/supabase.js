@@ -50,7 +50,7 @@ document.addEventListener('visibilitychange', () => {
 async function pushToSupabase(){
   if(!sb || !activeUserId) return;
   try {
-    const { error } = await sb.from('tracker_state').upsert({
+    const { error } = await sb.from('athlete_tracker_state').upsert({
       user_id: activeUserId,
       state,
       updated_at: new Date().toISOString()
@@ -65,7 +65,7 @@ async function pushToSupabase(){
 
 async function pullAthleteState(userId){
   if(!sb || !userId) return null;
-  const { data, error } = await sb.from('tracker_state')
+  const { data, error } = await sb.from('athlete_tracker_state')
     .select('user_id, state, updated_at')
     .eq('user_id', userId)
     .maybeSingle();
