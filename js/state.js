@@ -1,12 +1,35 @@
-let state = { currentWeek:0, sessions:{}, weekLogs:{}, times:[], customBreakdowns:{}, sessionEdits:{}, lastModified:0 };
-try{ const s=localStorage.getItem('sprintTracker18'); if(s) state=JSON.parse(s); }catch(e){}
-if(!state.lastModified) state.lastModified = 0;
+// ===== ACCOUNT-SCOPED ATHLETE STATE =====
+// Never share one browser storage key between different athlete accounts.
+function emptyTrackerState(){
+  return { currentWeek:0, sessions:{}, weekLogs:{}, times:[], customBreakdowns:{}, sessionEdits:{}, lastModified:0 };
+}
+let state = emptyTrackerState();
+let activeUserId = null;
+
+function accountStorageKey(userId){
+  return 'sprintTracker18:user:' + userId;
+}
+
+function loadStateForUser(userId){
+  activeUserId = userId || null;
+  state = emptyTrackerState();
+  if(!activeUserId) return;
+  try{
+    const saved = localStorage.getItem(accountStorageKey(activeUserId));
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(parsed && typeof parsed === 'object') state = { ...emptyTrackerState(), ...parsed };
+    }
+  }catch(e){ console.warn('Could not load this account\'s local tracker state', e); }
+  if(!state.lastModified) state.lastModified = 0;
+  if(typeof resetProgramToBase === 'function') resetProgramToBase();
+  if(typeof applySessionEdits === 'function') applySessionEdits();
+}
 
 function persist(){
-  // Stamp every local save so we can tell, on the next load, whether this
-  // device's copy is newer than whatever Supabase has — this is what stops
-  // a stale remote pull from silently overwriting a just-made edit.
   state.lastModified = Date.now();
-  try{ localStorage.setItem('sprintTracker18', JSON.stringify(state)); }catch(e){}
+  try{
+    if(activeUserId) localStorage.setItem(accountStorageKey(activeUserId), JSON.stringify(state));
+  }catch(e){}
   queueSync();
 }
