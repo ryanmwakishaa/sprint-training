@@ -1,6 +1,6 @@
-const CACHE = 'sprint-tracker-v18';
+const CACHE = 'sprint-tracker-v19';
 
-const ASSETS = [
+const CORE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
@@ -10,51 +10,56 @@ const ASSETS = [
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css'
 ];
 
-// Install — cache all core assets
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(cache => {
-      // Cache local assets immediately, external fonts best-effort
-      return cache.addAll(['/', '/index.html', '/manifest.json'])
-        .then(() => cache.addAll(ASSETS.filter(a => a.startsWith('http'))).catch(() => {}));
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE).then(async cache => {
+      await cache.addAll(['/', '/index.html', '/manifest.json']);
+      await cache.addAll(CORE_ASSETS.filter(asset => asset.startsWith('http'))).catch(() => {});
     }).then(() => self.skipWaiting())
   );
 });
 
-// Activate — clear old caches
-self.addEventListener('activate', e => {
-  e.waitUntil(
+self.addEventListener('activate', event => {
+  event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))
     ).then(() => self.clients.claim())
   );
 });
 
-// Fetch — cache-first for local, network-first for external
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
 
-  // Always network-first for Anthropic API (not cacheable)
-  if (url.hostname === 'api.anthropic.com') return;
+  // Never cache writes, Supabase traffic, Netlify functions, or other dynamic endpoints.
+  if (request.method !== 'GET') return;
+  if (url.pathname.startsWith('/.netlify/')) return;
 
-  // Cache-first strategy
-  e.respondWith(
-    caches.match(e.request).then(cached => {
+  // External requests are network-only unless they were explicitly precached (fonts/icons).
+  if (url.origin !== self.location.origin) {
+    event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
+    return;
+  }
+
+  // Only cache app shell/static assets. Do not cache arbitrary same-origin GET responses.
+  const isStaticAsset = url.pathname === '/' ||
+    url.pathname === '/index.html' ||
+    /\.(?:js|css|json|png|svg|webp|ico|woff2?)$/i.test(url.pathname);
+  if (!isStaticAsset) return;
+
+  // Network-first keeps account/auth code current; cached assets remain an offline fallback.
+  event.respondWith(
+    fetch(request).then(response => {
+      if (response && response.ok) {
+        const copy = response.clone();
+        caches.open(CACHE).then(cache => cache.put(request, copy));
+      }
+      return response;
+    }).catch(async () => {
+      const cached = await caches.match(request);
       if (cached) return cached;
-
-      return fetch(e.request).then(response => {
-        // Cache successful GET responses
-        if (e.request.method === 'GET' && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE).then(cache => cache.put(e.request, clone));
-        }
-        return response;
-      }).catch(() => {
-        // Offline fallback — return index.html for navigation requests
-        if (e.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
+      if (request.mode === 'navigate') return caches.match('/index.html');
+      return Response.error();
     })
   );
 });
