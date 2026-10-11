@@ -56,6 +56,14 @@ async function activateAccount(user){
     const {data:profile,error}=await sb.from('profiles').select('id,full_name,role').eq('id',user.id).single();
     if(error) throw error;
     currentUserRole=profile.role||'athlete';
+    // Preserve legacy device data only through an explicit choice by the coach account.
+    // Athlete accounts never silently inherit another person's browser-local progress.
+    const legacyState=localStorage.getItem('sprintTracker18');
+    const accountKey='sprintTracker18:user:'+user.id;
+    if(currentUserRole==='coach' && legacyState && !localStorage.getItem(accountKey)){
+      const importLegacy=confirm('This browser has older Sprint Tracker data. Import it into your coach account? Only choose OK if that data belongs to you. New athlete accounts will remain separate.');
+      if(importLegacy) localStorage.setItem(accountKey,legacyState);
+    }
     loadStateForUser(user.id);
     document.getElementById('authScreen').style.display='none';
     document.querySelector('.app').style.display='block';
