@@ -1,4 +1,4 @@
-const CACHE = 'sprint-tracker-v19';
+const CACHE = 'sprint-tracker-v20';
 
 const CORE_ASSETS = [
   '/',
