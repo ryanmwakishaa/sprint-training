@@ -11,6 +11,8 @@ function showAuthMessage(message, isError=false){
 }
 
 async function handleSignIn(){
+  const passwordInput=document.getElementById('authPassword');
+  if(passwordInput) passwordInput.autocomplete='current-password';
   if(!sb) return showAuthMessage('Authentication is unavailable. Check the Supabase configuration.', true);
   const email=document.getElementById('authEmail').value.trim();
   const password=document.getElementById('authPassword').value;
@@ -26,6 +28,8 @@ async function handleSignIn(){
 }
 
 async function handleSignUp(){
+  const passwordInput=document.getElementById('authPassword');
+  if(passwordInput) passwordInput.autocomplete='new-password';
   if(!sb) return showAuthMessage('Authentication is unavailable. Check the Supabase configuration.', true);
   const name=document.getElementById('authName').value.trim();
   const email=document.getElementById('authEmail').value.trim();
