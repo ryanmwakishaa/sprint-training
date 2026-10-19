@@ -542,3 +542,53 @@
     .gloss-row{grid-template-columns:1fr}
     .gloss-tag{display:none}
   }
+
+
+/* ===== MOBILE POLISH ===== */
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+button, input, select, textarea{font:inherit}
+button, .tab, .feel-btn, .sess-btn, .opts-btn, .theme-toggle{touch-action:manipulation}
+input, select, textarea{max-width:100%;min-width:0}
+#authScreen{box-sizing:border-box;width:calc(100% - 24px);margin: max(20px, env(safe-area-inset-top)) auto 24px !important;padding:clamp(18px,5vw,26px) !important}
+#authScreen input{min-height:46px;padding:11px 12px;border:1px solid var(--clay-line,#ddd);border-radius:9px;background:var(--paper,#fff);color:var(--ink,#1C1B19);font-size:16px}
+#authScreen button{min-height:46px}
+@media (max-width:600px){
+  .app{padding:16px 12px calc(24px + env(safe-area-inset-bottom));}
+  .app-header{align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+  .app-header > div:last-child{width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:7px !important}
+  .brand-title{font-size:19px}
+  .brand-sub{font-size:10px}
+  #accountLabel{max-width:calc(100vw - 180px) !important}
+  .tab-bar{gap:4px;overflow-x:auto;justify-content:flex-start;scrollbar-width:thin;-webkit-overflow-scrolling:touch;padding:4px;margin-bottom:16px}
+  .tab{flex:0 0 auto;white-space:nowrap;min-height:42px;padding:10px 12px;font-size:12px}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px}
+  .metric{padding:11px 12px}
+  .metric-val{font-size:18px}
+  .card{padding:14px;margin-bottom:12px;border-radius:12px}
+  .card-title{font-size:13.5px}
+  .week-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .feel-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .feel-btn{min-height:42px;padding:9px 6px}
+  .btn-row{flex-wrap:wrap}
+  .btn{min-height:42px}
+  .session-row{gap:7px}
+  .day-col{width:32px}
+  .badge{font-size:9px;padding:3px 6px}
+  .gloss-row{grid-template-columns:minmax(0,1fr);gap:5px}
+  .gloss-tag{display:none}
+  .spotify-frame{height:352px}
+  .chat-input-wrap{padding-bottom:max(4px,env(safe-area-inset-bottom))}
+}
+@media (max-width:380px){
+  .app{padding-left:9px;padding-right:9px}
+  .tab{padding:9px 10px;font-size:11.5px}
+  .brand-title{font-size:17px}
+  .metric-label{font-size:9px}
+  .session-row{font-size:12px}
+  .badge{font-size:8px}
+  #authScreen > div{gap:7px}
+  #authScreen button{font-size:12px;padding-left:8px;padding-right:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto !important;animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
