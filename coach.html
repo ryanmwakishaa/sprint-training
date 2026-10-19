@@ -263,3 +263,30 @@ init();
 </script>
 </body>
 </html>
+
+
+/* Phone layout */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,input,select,textarea{font:inherit}
+input,select,textarea{max-width:100%;min-width:0}
+@media(max-width:600px){
+  .app{width:100%;padding:16px 12px calc(24px + env(safe-area-inset-bottom))}
+  .header{align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .brand-title{font-size:18px}
+  .brand-sub{font-size:9.5px}
+  .sync{margin-left:auto}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px}
+  .metric{padding:11px 12px}
+  .metric-val{font-size:18px}
+  .card{padding:14px;margin-bottom:12px;border-radius:12px}
+  .session-row{gap:7px;font-size:12px}
+  .day-col{width:31px}
+  .badge{font-size:9px;padding:3px 6px}
+  .week-item{gap:7px}
+}
+@media(max-width:380px){
+  .app{padding-left:9px;padding-right:9px}
+  .brand-title{font-size:17px}
+  .metric-label{font-size:9px}
+  .session-row{font-size:11.5px}
+}
